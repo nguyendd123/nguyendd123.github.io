@@ -4,13 +4,35 @@
 ## <span style="color:red"> 0x1. Initial Reconnaissance </span>
 
 ### file
-![Getting Started](./images/pwntw-hacknote/file.png)
+<!-- ![Getting Started](./images/pwntw-hacknote/file.png) -->
+```
+↪ file hacknote
+hacknote: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=a32de99816727a2ffa1fe5f4a324238b2d59a606, stripped
+```
 
 ### checksec
-![Getting Started](./images/pwntw-hacknote/checksec.png)
+<!-- ![Getting Started](./images/pwntw-hacknote/checksec.png) -->
+```
+↪ checksec --file=hacknote
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
+Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   No Symbols	No	0		2		hacknote
+
+```
 
 ### ./hacknote
-![Getting Started](./images/pwntw-hacknote/run.png)
+<!-- ![Getting Started](./images/pwntw-hacknote/run.png) -->
+```
+↪ ./hacknote
+----------------------
+       HackNote       
+----------------------
+ 1. Add note          
+ 2. Delete note       
+ 3. Print note        
+ 4. Exit              
+----------------------
+Your choice :
+```
 
 ---
 
