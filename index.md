@@ -1,5 +1,1 @@
-Here you can say lots of fun things about your site.
-
-Maybe say a some things about yourself.
-
-Or maybe what you plan to blog about.
+I'm just a normal lad trying to bounce back after three rough years at HUS's highschool for gifted students.
