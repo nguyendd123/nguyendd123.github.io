@@ -152,7 +152,7 @@ unsigned int sub_80488A5()
 ## <span style="color:red">0x3. Analysis</span>
 
 Take a look at Add_note function, you can see that a variable at 0x804a4c (data section) used to make sure that you just get to use add_note option 6 times by checking whether it's less than 6 or not at the beginning and increasing it by 1 after adding a new note. But see inside the if condition, they just allow us to use add_note option 5 times. The reason is that they use a 5-variables array, stored at 0x804a050, and when you choose the option 1, they will check whether are there any available slot, if not they do nothing.
-When you add a new note, they will create a chunk of 8 bytes and a chunk of your chosen size. The first chunk will be stored at the array i mentioned above, and used as a struct(the first element stores a funtion (sub_804862B), the second one store the address of the second chunk).
+When you add a new note, they will create a chunk of 8 bytes and a chunk of your chosen size. The first chunk will be stored at the array i mentioned above, and used as a struct(the first element stores a funtion (sub_804862B), the second one stores the address of the second chunk).
 ```
 int __cdecl sub_804862B(int a1)
 {
