@@ -193,7 +193,7 @@ _int_free (....){
 
 To bypass this errror, create 2 fake chunks right after your fake chunk at name variable.
 
-After get the address of main arena, when I try to create a chunk of 15 bytes, they return me the address of my fake chunk that I just freed. To handle that, I prepared 2 chunks and put them into tcache before freeing my fake chunk.
+After getting the address of main arena, when I try to create a chunk of 15 bytes, they return me the address of my fake chunk that I just freed. To handle that, I prepared 2 chunks and put them into tcache before freeing my fake chunk.
 
 
 ###### Exploit
