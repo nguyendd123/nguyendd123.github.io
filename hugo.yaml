@@ -3,6 +3,10 @@ languageCode: en-us
 title: NguyenDD's Blog
 theme: ["PaperMod"]
 
+pagination:
+  disableAliases: false
+  pagerSize: 4
+
 params:
   homeInfoParams:
     Title: "Hello, I'm NguyenDD."
