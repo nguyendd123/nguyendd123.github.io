@@ -16,7 +16,7 @@ params:
       url: "https://x.com/dung_dang65845"
   cover:
     linkFullImages: true
-  # ShowShareButtons: true
+  ShowShareButtons: true
   ShowPostNavLinks: true
 
 menu:
@@ -29,7 +29,6 @@ menu:
       name: Tags
       url: /tags
       weight: 20
-    # - identifier: archives
-    #   name: Archive
-    #   url: /archives
-    #   weight: 30
+    - name: Archive
+      url: archives
+      weight: 30
