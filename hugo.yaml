@@ -22,6 +22,9 @@ params:
     linkFullImages: true
   ShowShareButtons: true
   ShowPostNavLinks: true
+  ShowToc: true
+  ShowCodeCopyButtons: true
+  
 
 menu:
   main:

@@ -241,7 +241,61 @@ First, you can write your name (up to 32 bytes) to name variable in bss (at 0x60
     <div class="post-meta"><span title='2025-08-29 09:53:43 +0700 +07'>August 29, 2025</span>
 
 </div>
-  </header> 
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#0x1-initial-reconnaissance" aria-label=" 0x1. Initial Reconnaissance "> 0x1. Initial Reconnaissance </a><ul>
+                        
+                <li>
+                    <a href="#file" aria-label="file">file</a></li>
+                <li>
+                    <a href="#checksec" aria-label="checksec">checksec</a></li>
+                <li>
+                    <a href="#tcache_tear" aria-label="./tcache_tear">./tcache_tear</a></li></ul>
+                </li>
+                <li>
+                    <a href="#0x2-reverse-engineering" aria-label="0x2. Reverse Engineering">0x2. Reverse Engineering</a><ul>
+                        
+                <li>
+                    <a href="#main" aria-label="main">main</a></li>
+                <li>
+                    <a href="#allocate" aria-label="Allocate">Allocate</a></li>
+                <li>
+                    <a href="#read_function" aria-label="read_function">read_function</a></li>
+                <li>
+                    <a href="#info" aria-label="Info">Info</a></li></ul>
+                </li>
+                <li>
+                    <a href="#0x3-analysis" aria-label="0x3. Analysis">0x3. Analysis</a></li>
+                <li>
+                    <a href="#0x3-exploit" aria-label="0x3. Exploit">0x3. Exploit</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#double-free-or-corruption-prev" aria-label="&ldquo;double free or corruption (!prev)&rdquo;">&ldquo;double free or corruption (!prev)&rdquo;</a></li>
+                <li>
+                    <a href="#corrupted-size-vs-prev_size" aria-label="&ldquo;corrupted size vs. prev_size&rdquo;">&ldquo;corrupted size vs. prev_size&rdquo;</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#exploit" aria-label="Exploit">Exploit</a>
+                </li>
+            </ul>
+            </ul>
+            </li>
+            </ul>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
   <div class="post-content"><hr>
 <h2 id="0x1-initial-reconnaissance"><!-- raw HTML omitted --> 0x1. Initial Reconnaissance <!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x1-initial-reconnaissance">#</a></h2>
 <h3 id="file">file<a hidden class="anchor" aria-hidden="true" href="#file">#</a></h3>
@@ -637,6 +691,53 @@ But when you try to exploit, you could encounter 2 errors below:</p>
         }
     })
 
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
 </script>
 </body>
 

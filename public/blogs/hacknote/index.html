@@ -253,7 +253,58 @@ When you add a new note, they will create a chunk of 8 bytes and a chunk of your
     <div class="post-meta"><span title='2025-08-29 12:42:01 +0700 +07'>August 29, 2025</span>
 
 </div>
-  </header> 
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#0x1-initial-reconnaissance" aria-label=" 0x1. Initial Reconnaissance "> 0x1. Initial Reconnaissance </a><ul>
+                        
+                <li>
+                    <a href="#file" aria-label="file">file</a></li>
+                <li>
+                    <a href="#checksec" aria-label="checksec">checksec</a></li>
+                <li>
+                    <a href="#hacknote" aria-label="./hacknote">./hacknote</a></li></ul>
+                </li>
+                <li>
+                    <a href="#0x2-reverse-engineering" aria-label="0x2. Reverse Engineering">0x2. Reverse Engineering</a><ul>
+                        
+                <li>
+                    <a href="#add_note" aria-label="Add_note">Add_note</a></li>
+                <li>
+                    <a href="#delete_note" aria-label="Delete_note">Delete_note</a></li>
+                <li>
+                    <a href="#print_note" aria-label="Print_note">Print_note</a></li></ul>
+                </li>
+                <li>
+                    <a href="#0x3-analysis" aria-label="0x3. Analysis">0x3. Analysis</a></li>
+                <li>
+                    <a href="#0x4-exploit" aria-label="0x4. Exploit">0x4. Exploit</a><ul>
+                        <ul>
+                        <ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#after-free-a-chunk-of-100-bytes" aria-label="After free a chunk of 100 bytes:">After free a chunk of 100 bytes:</a></li>
+                <li>
+                    <a href="#add-a-new-note-of-100-bytes-after-free-and-overwrite-the-first-4-bytes" aria-label="Add a new note of 100 bytes after free and overwrite the first 4 bytes:">Add a new note of 100 bytes after free and overwrite the first 4 bytes:</a></li>
+                <li>
+                    <a href="#exploit" aria-label="Exploit:">Exploit:</a>
+                </li>
+            </ul>
+            </ul>
+            </ul>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
   <div class="post-content"><hr>
 <h2 id="0x1-initial-reconnaissance"><!-- raw HTML omitted --> 0x1. Initial Reconnaissance <!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x1-initial-reconnaissance">#</a></h2>
 <h3 id="file">file<a hidden class="anchor" aria-hidden="true" href="#file">#</a></h3>
@@ -620,6 +671,53 @@ bk: 0xf7fcb7b0
         }
     })
 
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
 </script>
 </body>
 
