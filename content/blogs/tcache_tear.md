@@ -8,7 +8,7 @@ title: 'Tcache tear (200 pts) - pwnable.tw'
 tags: ["pwnable.tw"]
 ---
 ---
-## <span style="color:red"> 0x1. Initial Reconnaissance </span>
+## 0x1. Initial Reconnaissance
 
 ### file
 ```
@@ -39,7 +39,7 @@ Your choice :
 
 ---
 
-## <span style="color:red">0x2. Reverse Engineering</span>
+## 0x2. Reverse Engineering
 
 ### main
 ```c
@@ -144,13 +144,13 @@ ssize_t sub_400B99()
 ```
 
 ---
-## <span style="color:red">0x3. Analysis</span>
+## 0x3. Analysis
 
 First, you can write your name (up to 32 bytes) to name variable in bss (at 0x602060). You can also print out what's in this variable with info option. They allow us to malloc a chunk of our desired size (as long as smaller than 0xff) and input our size-16 to these chunk, then store the address to ptr variable (at 0x602088). Free option enables us to free chunk stored at ptr variable but not reset it.
 
 ---
 
-## <span style="color:red">0x3. Exploit</span>
+## 0x4. Exploit
 
 If you allocate a chunk of 15 bytes, the program mistakenly lets you input -1 bytes into it — which actually means you can write up to 0xff bytes. Using this, you can create two chunks, with the first one being 15 bytes. After freeing both chunks, allocate another 15-byte chunk to reclaim the first one. Since you can now write 0xff bytes into it, you can overflow into the second chunk and overwrite its fd pointer, paving the way for exploitation. 
 Because you can print value at name variable, so what will happen if you make this variable become a fake chunk ?

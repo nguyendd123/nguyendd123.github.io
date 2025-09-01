@@ -6,7 +6,7 @@ tags: ["pwnable.tw"]
 ---
 ---
 
-## <span style="color:red"> 0x1. Initial Reconnaissance </span>
+## 0x1. Initial Reconnaissance 
 
 ### file
 ```
@@ -40,7 +40,7 @@ Your choice :
 
 ---
 
-## <span style="color:red">0x2. Reverse Engineering</span>
+## 0x2. Reverse Engineering
 
 ### main
 ```c
@@ -173,7 +173,7 @@ int closefile()
 ```
 
 ---
-## <span style="color:red">0x3. Analysis</span>
+## 0x3. Analysis
 
 We have 5 options, write a file name to filename variable in bss, open it and store the address of ```_IO_FILE_PLUS``` to fp variable in bss. 
 
@@ -267,7 +267,7 @@ We can also read the file and store the content to magicbuf, print the content t
 The last option is exit, after that you can write whatever you want with your desire length to an array char name[32] just right above fp variable.
 
 ---
-## <span style="color:red">0x3. Exploit</span>
+## 0x4. Exploit
 
 You can open the file ```/proc/self/maps``` to leak the libc address. When exit the process, they call fclose too, before that you can overwrite fp variable, and create a fake ```_IO_FILE_PLUS``` too.
 Let's see the fclose function in libc 2.23:

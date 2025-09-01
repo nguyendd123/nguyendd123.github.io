@@ -6,7 +6,7 @@ tags: ["pwnable.tw"]
 ---
 ---
 
-## <span style="color:red"> 0x1. Initial Reconnaissance </span>
+## 0x1. Initial Reconnaissance 
 
 ### file
 ```
@@ -37,7 +37,7 @@ Your choice:
 
 ---
 
-## <span style="color:red">0x2. Reverse Engineering</span>
+## 0x2. Reverse Engineering
 
 ### main
 ```c
@@ -190,7 +190,7 @@ __int64 read_long()
 
 ---
 
-## <span style="color:red">0x3. Analysis</span>
+## 0x3. Analysis
 
 In this challenge, you have three options.
 Option 1 - Allocate.
@@ -204,7 +204,7 @@ They realloc the chosen chunk to the size of 0, then assign the chosen index to 
 
 ---
 
-## <span style="color:red">0x3. Exploit</span>
+## 0x4. Exploit
 
 As you can see in Rfree function, they realloc (ptr, 0) instead of free (ptr), and when I observed in gdb, they also put the chosen chunk into tcache. And in Allocate function, they use realloc (0, size) instead of alloc (size). I also tried to expand the chunk, and I see if there's space right after the chunk: it expands in place. So, I can get a conclusion:
 ```

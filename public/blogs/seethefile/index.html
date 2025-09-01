@@ -8,7 +8,7 @@
 <title>Seethefile (250 pts) - pwnable.tw | NguyenDD&#39;s Blog</title>
 <meta name="keywords" content="pwnable.tw">
 <meta name="description" content="
- 0x1. Initial Reconnaissance 
+0x1. Initial Reconnaissance
 file
 ↪ file seethefile
 seethefile: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=04e6f2f8c85fca448d351ef752ff295581c2650d, not stripped
@@ -277,7 +277,7 @@ We have 5 options, write a file name to filename variable in bss, open it and st
 
         <div class="inner"><ul>
                 <li>
-                    <a href="#0x1-initial-reconnaissance" aria-label=" 0x1. Initial Reconnaissance "> 0x1. Initial Reconnaissance </a><ul>
+                    <a href="#0x1-initial-reconnaissance" aria-label="0x1. Initial Reconnaissance">0x1. Initial Reconnaissance</a><ul>
                         
                 <li>
                     <a href="#file" aria-label="file">file</a></li>
@@ -313,7 +313,7 @@ We have 5 options, write a file name to filename variable in bss, open it and st
                     </ul>
                 </li>
                 <li>
-                    <a href="#0x3-exploit" aria-label="0x3. Exploit">0x3. Exploit</a><ul>
+                    <a href="#0x4-exploit" aria-label="0x4. Exploit">0x4. Exploit</a><ul>
                         <ul>
                         <ul>
                         
@@ -330,7 +330,7 @@ We have 5 options, write a file name to filename variable in bss, open it and st
 </div>
 
   <div class="post-content"><hr>
-<h2 id="0x1-initial-reconnaissance"><!-- raw HTML omitted --> 0x1. Initial Reconnaissance <!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x1-initial-reconnaissance">#</a></h2>
+<h2 id="0x1-initial-reconnaissance">0x1. Initial Reconnaissance<a hidden class="anchor" aria-hidden="true" href="#0x1-initial-reconnaissance">#</a></h2>
 <h3 id="file">file<a hidden class="anchor" aria-hidden="true" href="#file">#</a></h3>
 <pre tabindex="0"><code>↪ file seethefile
 seethefile: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=04e6f2f8c85fca448d351ef752ff295581c2650d, not stripped
@@ -353,7 +353,7 @@ Partial RELRO   No canary found   NX enabled    No PIE          No RPATH   No RU
 ----------------------------------
 Your choice :
 </code></pre><hr>
-<h2 id="0x2-reverse-engineering"><!-- raw HTML omitted -->0x2. Reverse Engineering<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x2-reverse-engineering">#</a></h2>
+<h2 id="0x2-reverse-engineering">0x2. Reverse Engineering<a hidden class="anchor" aria-hidden="true" href="#0x2-reverse-engineering">#</a></h2>
 <h3 id="main">main<a hidden class="anchor" aria-hidden="true" href="#main">#</a></h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#66d9ef">__cdecl</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>envp)
 </span></span><span style="display:flex;"><span>{
@@ -470,7 +470,7 @@ Your choice :
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> result;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><hr>
-<h2 id="0x3-analysis"><!-- raw HTML omitted -->0x3. Analysis<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x3-analysis">#</a></h2>
+<h2 id="0x3-analysis">0x3. Analysis<a hidden class="anchor" aria-hidden="true" href="#0x3-analysis">#</a></h2>
 <p>We have 5 options, write a file name to filename variable in bss, open it and store the address of <code>_IO_FILE_PLUS</code> to fp variable in bss.</p>
 <h5 id="libioh">libio.h<a hidden class="anchor" aria-hidden="true" href="#libioh">#</a></h5>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> _IO_FILE {
@@ -554,7 +554,7 @@ Your choice :
 </span></span></code></pre></div><p>We can also read the file and store the content to magicbuf, print the content to the screen. You can use fread the second time to read the next 400 bytes. You can also close the file if you want.
 The last option is exit, after that you can write whatever you want with your desire length to an array char name[32] just right above fp variable.</p>
 <hr>
-<h2 id="0x3-exploit"><!-- raw HTML omitted -->0x3. Exploit<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x3-exploit">#</a></h2>
+<h2 id="0x4-exploit">0x4. Exploit<a hidden class="anchor" aria-hidden="true" href="#0x4-exploit">#</a></h2>
 <p>You can open the file <code>/proc/self/maps</code> to leak the libc address. When exit the process, they call fclose too, before that you can overwrite fp variable, and create a fake <code>_IO_FILE_PLUS</code> too.
 Let&rsquo;s see the fclose function in libc 2.23:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>

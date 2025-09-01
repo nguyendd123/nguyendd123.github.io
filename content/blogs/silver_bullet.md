@@ -6,7 +6,7 @@ tags: ["pwnable.tw"]
 ---
 ---
 
-## <span style="color:red"> 0x1. Initial Reconnaissance </span>
+## 0x1. Initial Reconnaissance 
 
 ### file
 
@@ -37,7 +37,7 @@ Your choice :
 ```
 
 ---
-## <span style="color:red">0x2. Reverse Engineering</span>
+## 0x2. Reverse Engineering
 
 ### main
 ```c
@@ -163,11 +163,11 @@ int __cdecl beat(int a1, int a2)
 ```
 
 ---
-## <span style="color:red">0x3. Analysis</span>
+## 0x3. Analysis
 In this challenge, they give you 4 options, creating a bullet allows you to input a string (maximum size is 48 bytes) and save the number of characters to v7 (in main function), which is v6 + 48. With power_up function, we can append a new string to v6 if the current size of v6 isn't 48. Then, the beat function just check whether v7 is greater than 0x7fffffff or not ? 
 
 ---
-## <span style="color:red">0x3. Exploit</span>
+## 0x4. Exploit
 
 When I researched on the Internet, I saw this:
 

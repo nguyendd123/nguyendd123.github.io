@@ -7,16 +7,16 @@ tags: ["pwnable.tw"]
 
 ---
 
-## <span style="color:red"> 0x1. Initial Reconnaissance </span>
+## 0x1. Initial Reconnaissance
 
 ### file
-```
+```bash
 ↪ file spirited_away
 spirited_away: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.24, BuildID[sha1]=9e6cd4dbfea6557127f3e9a8d90e2fe46b21f842, not stripped
 ```
 
 ### checksec 
-```
+```bash
 ↪ checksec --file=spirited_away
 RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
 Partial RELRO   No canary found   NX enabled    No PIE          No RPATH   No RUNPATH   80 Symbols	  No	0		4		spirited_away
@@ -49,7 +49,7 @@ Would you like to leave another comment? <y/n>:
 
 ---
 
-## <span style="color:red">0x2. Reverse Engineering</span>
+## 0x2. Reverse Engineering
 
 ### survey
 ```c
@@ -119,7 +119,7 @@ LABEL_2:
 
 --- 
 
-## <span style="color:red">0x3. Analysis</span>
+## 0x3. Analysis
 
 This challenge allows us to write our name with ```v2``` bytes to a chunk of 60 bytes (the address of the chunk stored at ```v6```), an integer to ```v5```, ```v3``` bytes to ```v7[80]``` and ```v2``` bytes to ```v4[80]```. Copy ```"%d comment so far. We will review them as soon as we can"``` to ```v1[56]```. And their sequence on stack will be like that:
 
@@ -145,7 +145,7 @@ ebp        -> ...
 
 ---
 
-## <span style="color:red">0x3. Exploit</span>
+## 0x3. Exploit
 
 In this challenge you can easily get the leak of libc on the stack, because they print ```comment, reason, name``` with ```%s``` format. 
 

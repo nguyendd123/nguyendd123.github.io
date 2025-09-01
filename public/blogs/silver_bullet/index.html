@@ -8,7 +8,7 @@
 <title>Silver bullet (200 pts) - pwnable.tw | NguyenDD&#39;s Blog</title>
 <meta name="keywords" content="pwnable.tw">
 <meta name="description" content="
- 0x1. Initial Reconnaissance 
+0x1. Initial Reconnaissance
 file
 ↪ file silver_bullet 
 silver_bullet: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=8c95d92edf8bf47b6c9c450e882b7142bf656a92, not stripped
@@ -270,7 +270,7 @@ In this challenge, they give you 4 options, creating a bullet allows you to inpu
 
         <div class="inner"><ul>
                 <li>
-                    <a href="#0x1-initial-reconnaissance" aria-label=" 0x1. Initial Reconnaissance "> 0x1. Initial Reconnaissance </a><ul>
+                    <a href="#0x1-initial-reconnaissance" aria-label="0x1. Initial Reconnaissance">0x1. Initial Reconnaissance</a><ul>
                         
                 <li>
                     <a href="#file" aria-label="file">file</a></li>
@@ -294,7 +294,7 @@ In this challenge, they give you 4 options, creating a bullet allows you to inpu
                 <li>
                     <a href="#0x3-analysis" aria-label="0x3. Analysis">0x3. Analysis</a></li>
                 <li>
-                    <a href="#0x3-exploit" aria-label="0x3. Exploit">0x3. Exploit</a><ul>
+                    <a href="#0x4-exploit" aria-label="0x4. Exploit">0x4. Exploit</a><ul>
                         <ul>
                         <ul>
                         <ul>
@@ -313,7 +313,7 @@ In this challenge, they give you 4 options, creating a bullet allows you to inpu
 </div>
 
   <div class="post-content"><hr>
-<h2 id="0x1-initial-reconnaissance"><!-- raw HTML omitted --> 0x1. Initial Reconnaissance <!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x1-initial-reconnaissance">#</a></h2>
+<h2 id="0x1-initial-reconnaissance">0x1. Initial Reconnaissance<a hidden class="anchor" aria-hidden="true" href="#0x1-initial-reconnaissance">#</a></h2>
 <h3 id="file">file<a hidden class="anchor" aria-hidden="true" href="#file">#</a></h3>
 <pre tabindex="0"><code>↪ file silver_bullet 
 silver_bullet: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=8c95d92edf8bf47b6c9c450e882b7142bf656a92, not stripped
@@ -333,7 +333,7 @@ Full RELRO      No canary found   NX enabled    No PIE          No RPATH   No RU
 +++++++++++++++++++++++++++
 Your choice :
 </code></pre><hr>
-<h2 id="0x2-reverse-engineering"><!-- raw HTML omitted -->0x2. Reverse Engineering<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x2-reverse-engineering">#</a></h2>
+<h2 id="0x2-reverse-engineering">0x2. Reverse Engineering<a hidden class="anchor" aria-hidden="true" href="#0x2-reverse-engineering">#</a></h2>
 <h3 id="main">main<a hidden class="anchor" aria-hidden="true" href="#main">#</a></h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#66d9ef">__cdecl</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>envp)
 </span></span><span style="display:flex;"><span>{
@@ -446,10 +446,10 @@ Your choice :
 </span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><hr>
-<h2 id="0x3-analysis"><!-- raw HTML omitted -->0x3. Analysis<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x3-analysis">#</a></h2>
+<h2 id="0x3-analysis">0x3. Analysis<a hidden class="anchor" aria-hidden="true" href="#0x3-analysis">#</a></h2>
 <p>In this challenge, they give you 4 options, creating a bullet allows you to input a string (maximum size is 48 bytes) and save the number of characters to v7 (in main function), which is v6 + 48. With power_up function, we can append a new string to v6 if the current size of v6 isn&rsquo;t 48. Then, the beat function just check whether v7 is greater than 0x7fffffff or not ?</p>
 <hr>
-<h2 id="0x3-exploit"><!-- raw HTML omitted -->0x3. Exploit<!-- raw HTML omitted --><a hidden class="anchor" aria-hidden="true" href="#0x3-exploit">#</a></h2>
+<h2 id="0x4-exploit">0x4. Exploit<a hidden class="anchor" aria-hidden="true" href="#0x4-exploit">#</a></h2>
 <p>When I researched on the Internet, I saw this:</p>
 <pre tabindex="0"><code>char * strncat ( char * destination, const char * source, size_t num );
 

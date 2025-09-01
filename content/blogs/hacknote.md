@@ -5,7 +5,7 @@ title: 'Hacknote (200 pts) - pwnable.tw'
 tags: ["pwnable.tw"]
 ---
 ---
-## <span style="color:red"> 0x1. Initial Reconnaissance </span>
+## 0x1. Initial Reconnaissance 
 
 ### file
 <!-- ![Getting Started](./images/pwntw-hacknote/file.png) -->
@@ -40,7 +40,7 @@ Your choice :
 
 ---
 
-## <span style='color:red'>0x2. Reverse Engineering</span>
+## 0x2. Reverse Engineering
 
 ### Add_note
 ```c
@@ -153,7 +153,7 @@ unsigned int sub_80488A5()
 ```
 ---
 
-## <span style="color:red">0x3. Analysis</span>
+## 0x3. Analysis
 
 Take a look at Add_note function, you can see that a variable at 0x804a4c (data section) used to make sure that you just get to use add_note option 6 times by checking whether it's less than 6 or not at the beginning and increasing it by 1 after adding a new note. But see inside the if condition, they just allow us to use add_note option 5 times. The reason is that they use a 5-variables array, stored at 0x804a050, and when you choose the option 1, they will check whether are there any available slot, if not they do nothing.
 When you add a new note, they will create a chunk of 8 bytes and a chunk of your chosen size. The first chunk will be stored at the array i mentioned above, and used as a struct(the first element stores a funtion (sub_804862B), the second one stores the address of the second chunk).
@@ -169,7 +169,7 @@ Next, the Delete_note function, they just free the second chunk, then the first 
 
 ---
 
-## <span style="color:red">0x4. Exploit</span>
+## 0x4. Exploit
 
 When you free a chunk, if its size is greater than 80 bytes and isn't adjacent to the top chunk (to do this just add another note in the middle), it will be put in unsorted bin (doubly linked-list) and if there is just only one chunk in unsorted bin, its previous and next pointer would point to the address of main arena in libc (the manager of bins). And when you add a new note having exactly the same size, they will give you the chunk from unsorted bin but don't reset this chunk, that means you can get the address of main arena and calculate the libc_base address, system's address, etc... 
 ###### After free a chunk of 100 bytes:

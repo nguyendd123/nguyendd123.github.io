@@ -6,23 +6,120 @@
     <description>Recent content on NguyenDD&#39;s Blog</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 29 Aug 2025 12:52:53 +0700</lastBuildDate>
+    <lastBuildDate>Mon, 01 Sep 2025 10:00:35 +0700</lastBuildDate>
     <atom:link href="//localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Babystack (250 pts) - pwnable.tw</title>
+      <link>//localhost:1313/blogs/babystack/</link>
+      <pubDate>Mon, 01 Sep 2025 10:00:35 +0700</pubDate>
+      <guid>//localhost:1313/blogs/babystack/</guid>
+      <description>&lt;hr&gt;
+&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;0x1. Initial Reconnaissance&lt;/h2&gt;
+&lt;h3 id=&#34;file&#34;&gt;file&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;↪ file babystack
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;babystack: ELF 64-bit LSB pie executable, x86-64, version &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;SYSV&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;, dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; GNU/Linux 2.6.32, stripped
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;checksec&#34;&gt;checksec&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;↪ checksec --file&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;babystack
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Full RELRO      Canary found      NX enabled    PIE enabled     No RPATH   No RUNPATH   No Symbols	Partial	1		4		babystack
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;babystack&#34;&gt;./babystack&lt;/h3&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;↪ ./babystack
+&amp;gt;&amp;gt; 1
+Your passowrd :
+&lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
+&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;0x2. Reverse Engineering&lt;/h2&gt;
+&lt;h3 id=&#34;main&#34;&gt;main&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;__int64&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;__fastcall&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;__int64&lt;/span&gt; a1, &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;a2, &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;a3)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  _QWORD &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;v3; &lt;span style=&#34;color:#75715e&#34;&gt;// rcx
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;__int64&lt;/span&gt; v4; &lt;span style=&#34;color:#75715e&#34;&gt;// rdx
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; v6[&lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;]; &lt;span style=&#34;color:#75715e&#34;&gt;// [rsp+0h] [rbp-60h] BYREF
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;__int64&lt;/span&gt; buf[&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;]; &lt;span style=&#34;color:#75715e&#34;&gt;// [rsp+40h] [rbp-20h] BYREF
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; v8[&lt;span style=&#34;color:#ae81ff&#34;&gt;16&lt;/span&gt;]; &lt;span style=&#34;color:#75715e&#34;&gt;// [rsp+50h] [rbp-10h] BYREF
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#a6e22e&#34;&gt;sub_D30&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  unk_202018 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;open&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/dev/urandom&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#a6e22e&#34;&gt;read&lt;/span&gt;(unk_202018, buf, &lt;span style=&#34;color:#ae81ff&#34;&gt;0x10uLL&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  v3 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; qword_202020;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  v4 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; buf[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;];
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;(_QWORD &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;)qword_202020 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; buf[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;];
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  v3[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; v4;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#a6e22e&#34;&gt;close&lt;/span&gt;(unk_202018);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; ( &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#a6e22e&#34;&gt;write&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;gt;&amp;gt; &amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;3uLL&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#a6e22e&#34;&gt;_read_chk&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0LL&lt;/span&gt;, v8, &lt;span style=&#34;color:#ae81ff&#34;&gt;16LL&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;16LL&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ( v8[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;break&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ( v8[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;51&lt;/span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ( unk_202014 )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#a6e22e&#34;&gt;sub_E76&lt;/span&gt;(v6);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;LABEL_15:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#a6e22e&#34;&gt;puts&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Invalid choice&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ( v8[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;49&lt;/span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#66d9ef&#34;&gt;goto&lt;/span&gt; LABEL_15;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ( unk_202014 )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          unk_202014 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#a6e22e&#34;&gt;sub_DEF&lt;/span&gt;((&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;)buf);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ( &lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;unk_202014 )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#a6e22e&#34;&gt;exit&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; ( &lt;span style=&#34;color:#a6e22e&#34;&gt;memcmp&lt;/span&gt;(buf, qword_202020, &lt;span style=&#34;color:#ae81ff&#34;&gt;0x10uLL&lt;/span&gt;) );
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0LL&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;sub_e76&#34;&gt;sub_E76&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;__fastcall&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;sub_E76&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;a1)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; src[&lt;span style=&#34;color:#ae81ff&#34;&gt;128&lt;/span&gt;]; &lt;span style=&#34;color:#75715e&#34;&gt;// [rsp+10h] [rbp-80h] BYREF
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#a6e22e&#34;&gt;printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Copy :&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#a6e22e&#34;&gt;sub_CA0&lt;/span&gt;((&lt;span style=&#34;color:#66d9ef&#34;&gt;unsigned&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;__int8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;)src, &lt;span style=&#34;color:#ae81ff&#34;&gt;0x3Fu&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#a6e22e&#34;&gt;strcpy&lt;/span&gt;(a1, src);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;puts&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;It is magic copy !&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;sub_def&#34;&gt;sub_DEF&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;__fastcall&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;sub_DEF&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;a1)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;size_t&lt;/span&gt; v1; &lt;span style=&#34;color:#75715e&#34;&gt;// rax
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; s[&lt;span style=&#34;color:#ae81ff&#34;&gt;128&lt;/span&gt;]; &lt;span style=&#34;color:#75715e&#34;&gt;// [rsp+10h] [rbp-80h] BYREF
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#a6e22e&#34;&gt;printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Your passowrd :&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#a6e22e&#34;&gt;sub_CA0&lt;/span&gt;((&lt;span style=&#34;color:#66d9ef&#34;&gt;unsigned&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;__int8&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;)s, &lt;span style=&#34;color:#ae81ff&#34;&gt;0x7Fu&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  v1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;strlen&lt;/span&gt;(s);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ( &lt;span style=&#34;color:#a6e22e&#34;&gt;strncmp&lt;/span&gt;(s, a1, v1) )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;puts&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Failed !&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  unk_202014 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;puts&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Login Success !&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id=&#34;0x3-analysis&#34;&gt;0x3. Analysis&lt;/h2&gt;
+&lt;p&gt;In this problem, we have 3 options, choose 1 to input the password up to 128 bytes, 2 to break the first while loop. If you input the right passwords, they will turn &lt;code&gt;unk_202014&lt;/code&gt; to true and allow you to copy 63 bytes to &lt;code&gt;v6[64]&lt;/code&gt; with option 3. The passwords will be stored at &lt;code&gt;buf[2]&lt;/code&gt; on stack and &lt;code&gt;qword_202020&lt;/code&gt; on bss. If you don&amp;rsquo;t wanna stuck in while loop or end the process instantly after breaking the first while loop, you should make sure that &lt;code&gt;unk_202014&lt;/code&gt; is true and the value in &lt;code&gt;buf&lt;/code&gt; and &lt;code&gt;qword_202020&lt;/code&gt; are the same.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Spirited away (300 pts) - pwnable.tw</title>
       <link>//localhost:1313/blogs/spirited_away/</link>
       <pubDate>Fri, 29 Aug 2025 12:52:53 +0700</pubDate>
       <guid>//localhost:1313/blogs/spirited_away/</guid>
       <description>&lt;hr&gt;
-&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;&lt;!-- raw HTML omitted --&gt; 0x1. Initial Reconnaissance &lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;0x1. Initial Reconnaissance&lt;/h2&gt;
 &lt;h3 id=&#34;file&#34;&gt;file&lt;/h3&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;↪ file spirited_away
-spirited_away: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.24, BuildID[sha1]=9e6cd4dbfea6557127f3e9a8d90e2fe46b21f842, not stripped
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;checksec&#34;&gt;checksec&lt;/h3&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;↪ checksec --file=spirited_away
-RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
-Partial RELRO   No canary found   NX enabled    No PIE          No RPATH   No RUNPATH   80 Symbols	  No	0		4		spirited_away
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;spirited_away&#34;&gt;./spirited_away&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;↪ file spirited_away
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;spirited_away: ELF 32-bit LSB executable, Intel i386, version &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;SYSV&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;, dynamically linked, interpreter /lib/ld-linux.so.2, &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; GNU/Linux 2.6.24, BuildID&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;sha1&lt;span style=&#34;color:#f92672&#34;&gt;]=&lt;/span&gt;9e6cd4dbfea6557127f3e9a8d90e2fe46b21f842, not stripped
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;checksec&#34;&gt;checksec&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;↪ checksec --file&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;spirited_away
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	Fortifiable	FILE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Partial RELRO   No canary found   NX enabled    No PIE          No RPATH   No RUNPATH   &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt; Symbols	  No	0		4		spirited_away
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;spirited_away&#34;&gt;./spirited_away&lt;/h3&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;↪ ./spirited_away
 Thanks for watching Spirited Away!
 Please leave some comments to help us improve our next movie!
@@ -45,7 +142,7 @@ Comment: bullshit
 
 Would you like to leave another comment? &amp;lt;y/n&amp;gt;:
 &lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x2. Reverse Engineering&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;0x2. Reverse Engineering&lt;/h2&gt;
 &lt;h3 id=&#34;survey&#34;&gt;survey&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;survey&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
@@ -110,7 +207,7 @@ Would you like to leave another comment? &amp;lt;y/n&amp;gt;:
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;fflush&lt;/span&gt;(stdout);
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x3-analysis&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x3. Analysis&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x3-analysis&#34;&gt;0x3. Analysis&lt;/h2&gt;
 &lt;p&gt;This challenge allows us to write our name with &lt;code&gt;v2&lt;/code&gt; bytes to a chunk of 60 bytes (the address of the chunk stored at &lt;code&gt;v6&lt;/code&gt;), an integer to &lt;code&gt;v5&lt;/code&gt;, &lt;code&gt;v3&lt;/code&gt; bytes to &lt;code&gt;v7[80]&lt;/code&gt; and &lt;code&gt;v2&lt;/code&gt; bytes to &lt;code&gt;v4[80]&lt;/code&gt;. Copy &lt;code&gt;&amp;quot;%d comment so far. We will review them as soon as we can&amp;quot;&lt;/code&gt; to &lt;code&gt;v1[56]&lt;/code&gt;. And their sequence on stack will be like that:&lt;/p&gt;</description>
     </item>
     <item>
@@ -119,7 +216,7 @@ Would you like to leave another comment? &amp;lt;y/n&amp;gt;:
       <pubDate>Fri, 29 Aug 2025 12:50:29 +0700</pubDate>
       <guid>//localhost:1313/blogs/seethefile/</guid>
       <description>&lt;hr&gt;
-&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;&lt;!-- raw HTML omitted --&gt; 0x1. Initial Reconnaissance &lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;0x1. Initial Reconnaissance&lt;/h2&gt;
 &lt;h3 id=&#34;file&#34;&gt;file&lt;/h3&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;↪ file seethefile
 seethefile: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=04e6f2f8c85fca448d351ef752ff295581c2650d, not stripped
@@ -142,7 +239,7 @@ Partial RELRO   No canary found   NX enabled    No PIE          No RPATH   No RU
 ----------------------------------
 Your choice :
 &lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x2. Reverse Engineering&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;0x2. Reverse Engineering&lt;/h2&gt;
 &lt;h3 id=&#34;main&#34;&gt;main&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;__cdecl&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;argv, &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;envp)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
@@ -259,7 +356,7 @@ Your choice :
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; result;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x3-analysis&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x3. Analysis&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x3-analysis&#34;&gt;0x3. Analysis&lt;/h2&gt;
 &lt;p&gt;We have 5 options, write a file name to filename variable in bss, open it and store the address of &lt;code&gt;_IO_FILE_PLUS&lt;/code&gt; to fp variable in bss.&lt;/p&gt;</description>
     </item>
     <item>
@@ -268,7 +365,7 @@ Your choice :
       <pubDate>Fri, 29 Aug 2025 12:49:08 +0700</pubDate>
       <guid>//localhost:1313/blogs/realloc/</guid>
       <description>&lt;hr&gt;
-&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;&lt;!-- raw HTML omitted --&gt; 0x1. Initial Reconnaissance &lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;0x1. Initial Reconnaissance&lt;/h2&gt;
 &lt;h3 id=&#34;file&#34;&gt;file&lt;/h3&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;↪ file re-alloc
 re-alloc: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=14ee078dfdcc34a92545f829c718d7acb853945b, for GNU/Linux 3.2.0, not stripped
@@ -288,7 +385,7 @@ $   4. Exit                $
 $$$$$$$$$$$$$$$$$$$$$$$$$$$
 Your choice:
 &lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x2. Reverse Engineering&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;0x2. Reverse Engineering&lt;/h2&gt;
 &lt;h3 id=&#34;main&#34;&gt;main&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;__fastcall&lt;/span&gt; __noreturn &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;argv, &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;envp)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
@@ -423,7 +520,7 @@ Your choice:
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;atoll&lt;/span&gt;(nptr);
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x3-analysis&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x3. Analysis&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x3-analysis&#34;&gt;0x3. Analysis&lt;/h2&gt;
 &lt;p&gt;In this challenge, you have three options.
 Option 1 - Allocate.
 This option allows you to create a chunk, then stores this chunk to an array at 0x4040b0, but this array just has 2 elements.&lt;/p&gt;</description>
@@ -434,7 +531,7 @@ This option allows you to create a chunk, then stores this chunk to an array at 
       <pubDate>Fri, 29 Aug 2025 12:47:23 +0700</pubDate>
       <guid>//localhost:1313/blogs/applestore/</guid>
       <description>&lt;hr&gt;
-&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;&lt;!-- raw HTML omitted --&gt; 0x1. Initial Reconnaissance &lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;0x1. Initial Reconnaissance&lt;/h2&gt;
 &lt;h3 id=&#34;file&#34;&gt;file&lt;/h3&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;↪ file applestore
 applestore: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.24, BuildID[sha1]=35f3890fc458c22154fbc1d65e9108a6c8738111, not stripped
@@ -453,7 +550,7 @@ Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RU
 6: Exit
 &amp;gt; 
 &lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x2. Reverse Engineering&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;0x2. Reverse Engineering&lt;/h2&gt;
 &lt;h3 id=&#34;handler&#34;&gt;handler&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;unsigned&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;handler&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
@@ -646,7 +743,7 @@ Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RU
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;__readgsdword&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0x14u&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;^&lt;/span&gt; v4;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x3-analysis&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x3. Analysis&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x3-analysis&#34;&gt;0x3. Analysis&lt;/h2&gt;
 &lt;p&gt;When you add an item, they will create a chunk of 16 bytes on heap, assume address of this chunk is v, v + 0 would store name of the item, v + 4 stores price of the item, and v + 8 stores the next item, v + 12 stores the previous item (this is for the linked list). Then, this chunk will be inserted into a doubly linked-list, and the head will be stored at 0x804B070. Delete function allows you to remove an item and delete the chunk from the linked-list. Cart function lists all items and calculates the total price. Finally, checkout function prints the total price and if the total price is 7174, they will gift you an Iphone 8 for 1 dollar. And now, notice that in cart, delete and handler, they allow us to input 21 bytes for the numbers, representing the option, resulting to vulnerability.&lt;/p&gt;</description>
     </item>
     <item>
@@ -655,7 +752,7 @@ Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RU
       <pubDate>Fri, 29 Aug 2025 12:44:32 +0700</pubDate>
       <guid>//localhost:1313/blogs/silver_bullet/</guid>
       <description>&lt;hr&gt;
-&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;&lt;!-- raw HTML omitted --&gt; 0x1. Initial Reconnaissance &lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;0x1. Initial Reconnaissance&lt;/h2&gt;
 &lt;h3 id=&#34;file&#34;&gt;file&lt;/h3&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;↪ file silver_bullet 
 silver_bullet: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=8c95d92edf8bf47b6c9c450e882b7142bf656a92, not stripped
@@ -675,7 +772,7 @@ Full RELRO      No canary found   NX enabled    No PIE          No RPATH   No RU
 +++++++++++++++++++++++++++
 Your choice :
 &lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x2. Reverse Engineering&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;0x2. Reverse Engineering&lt;/h2&gt;
 &lt;h3 id=&#34;main&#34;&gt;main&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;__cdecl&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;argv, &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;envp)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
@@ -788,7 +885,7 @@ Your choice :
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  }
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x3-analysis&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x3. Analysis&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x3-analysis&#34;&gt;0x3. Analysis&lt;/h2&gt;
 &lt;p&gt;In this challenge, they give you 4 options, creating a bullet allows you to input a string (maximum size is 48 bytes) and save the number of characters to v7 (in main function), which is v6 + 48. With power_up function, we can append a new string to v6 if the current size of v6 isn&amp;rsquo;t 48. Then, the beat function just check whether v7 is greater than 0x7fffffff or not ?&lt;/p&gt;</description>
     </item>
     <item>
@@ -797,7 +894,7 @@ Your choice :
       <pubDate>Fri, 29 Aug 2025 12:42:01 +0700</pubDate>
       <guid>//localhost:1313/blogs/hacknote/</guid>
       <description>&lt;hr&gt;
-&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;&lt;!-- raw HTML omitted --&gt; 0x1. Initial Reconnaissance &lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;0x1. Initial Reconnaissance&lt;/h2&gt;
 &lt;h3 id=&#34;file&#34;&gt;file&lt;/h3&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;↪ file hacknote
 hacknote: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=a32de99816727a2ffa1fe5f4a324238b2d59a606, stripped
@@ -817,7 +914,7 @@ Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RU
 ----------------------
 Your choice :
 &lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x2. Reverse Engineering&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;0x2. Reverse Engineering&lt;/h2&gt;
 &lt;h3 id=&#34;add_note&#34;&gt;Add_note&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;unsigned&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;sub_8048646&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
@@ -920,7 +1017,7 @@ Your choice :
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;__readgsdword&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0x14u&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;^&lt;/span&gt; v6;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x3-analysis&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x3. Analysis&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x3-analysis&#34;&gt;0x3. Analysis&lt;/h2&gt;
 &lt;p&gt;Take a look at Add_note function, you can see that a variable at 0x804a4c (data section) used to make sure that you just get to use add_note option 6 times by checking whether it&amp;rsquo;s less than 6 or not at the beginning and increasing it by 1 after adding a new note. But see inside the if condition, they just allow us to use add_note option 5 times. The reason is that they use a 5-variables array, stored at 0x804a050, and when you choose the option 1, they will check whether are there any available slot, if not they do nothing.
 When you add a new note, they will create a chunk of 8 bytes and a chunk of your chosen size. The first chunk will be stored at the array i mentioned above, and used as a struct(the first element stores a funtion (sub_804862B), the second one stores the address of the second chunk).&lt;/p&gt;</description>
     </item>
@@ -930,7 +1027,7 @@ When you add a new note, they will create a chunk of 8 bytes and a chunk of your
       <pubDate>Fri, 29 Aug 2025 09:53:43 +0700</pubDate>
       <guid>//localhost:1313/blogs/tcache_tear/</guid>
       <description>&lt;hr&gt;
-&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;&lt;!-- raw HTML omitted --&gt; 0x1. Initial Reconnaissance &lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x1-initial-reconnaissance&#34;&gt;0x1. Initial Reconnaissance&lt;/h2&gt;
 &lt;h3 id=&#34;file&#34;&gt;file&lt;/h3&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;↪ file tcache_tear
 tcache_tear: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=a273b72984b37439fd6e9a64e86d1c2131948f32, stripped
@@ -950,7 +1047,7 @@ $$$$$$$$$$$$$$$$$$$$$$$
 $$$$$$$$$$$$$$$$$$$$$$$
 Your choice :
 &lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x2. Reverse Engineering&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x2-reverse-engineering&#34;&gt;0x2. Reverse Engineering&lt;/h2&gt;
 &lt;h3 id=&#34;main&#34;&gt;main&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;__fastcall&lt;/span&gt; __noreturn &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; a1, &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;a2, &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;**&lt;/span&gt;a3)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
@@ -1042,7 +1139,7 @@ Your choice :
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;write&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;unk_602060, &lt;span style=&#34;color:#ae81ff&#34;&gt;0x20uLL&lt;/span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;h2 id=&#34;0x3-analysis&#34;&gt;&lt;!-- raw HTML omitted --&gt;0x3. Analysis&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;0x3-analysis&#34;&gt;0x3. Analysis&lt;/h2&gt;
 &lt;p&gt;First, you can write your name (up to 32 bytes) to name variable in bss (at 0x602060). You can also print out what&amp;rsquo;s in this variable with info option. They allow us to malloc a chunk of our desired size (as long as smaller than 0xff) and input our size-16 to these chunk, then store the address to ptr variable (at 0x602088). Free option enables us to free chunk stored at ptr variable but not reset it.&lt;/p&gt;</description>
     </item>
   </channel>
