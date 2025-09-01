@@ -145,7 +145,7 @@ LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA
 Because ```strcpy``` will copy the string until the first null byte. You can use ```sub_DEF``` to input full "A" til ```&s + 0x48```, copy it to ```v6[64]``` to overwrite ```buf[2]```, and brute-force to get IO_new_file_setbuf + 9:DD. Do it again to overwrite return address to one_gadget :b and get the shell.
 
 ### Exploit
-```
+```py
 from pwn import *
 
 exe = ELF("./babystack_patched")
