@@ -122,6 +122,19 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Realloc (200 pts) - pwnable.tw
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 0x1. Initial Reconnaissance file ↪ file re-alloc re-alloc: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=14ee078dfdcc34a92545f829c718d7acb853945b, for GNU/Linux 3.2.0, not stripped checksec ↪ checksec --file=re-alloc RELRO STACK CANARY NX PIE RPATH RUNPATH	Symbols	FORTIFY	Fortified	Fortifiable	FILE Partial RELRO Canary found NX enabled No PIE No RPATH No RUNPATH 83 Symbols	Partial	1	2	re-alloc ./re-alloc ↪ ./re-alloc $$$$$$$$$$$$$$$$$$$$$$$$$$$$ 🍊 RE Allocator 🍊 $$$$$$$$$$$$$$$$$$$$$$$$$$$$ $ 1. Alloc $ $ 2. Realloc $ $ 3. Free $ $ 4. Exit $ $$$$$$$$$$$$$$$$$$$$$$$$$$$ Your choice: 0x2. Reverse Engineering main int __fastcall __noreturn main(int argc, const char **argv, const char **envp) { int v3; // [rsp&#43;4h] [rbp-Ch] BYREF unsigned __int64 v4; // [rsp&#43;8h] [rbp-8h] v4 = __readfsqword(0x28u); v3 = 0; init_proc(argc, argv, envp); while ( 1 ) { while ( 1 ) { menu(); __isoc99_scanf(&#34;%d&#34;, &amp;v3); if ( v3 != 2 ) break; reallocate(); } if ( v3 &gt; 2 ) { if ( v3 == 3 ) { rfree(); } else { if ( v3 == 4 ) _exit(0); LABEL_13: puts(&#34;Invalid Choice&#34;); } } else { if ( v3 != 1 ) goto LABEL_13; allocate(); } } } Allocate int allocate() { _BYTE *v0; // rax unsigned __int64 v2; // [rsp&#43;0h] [rbp-20h] unsigned __int64 size; // [rsp&#43;8h] [rbp-18h] void *v4; // [rsp&#43;18h] [rbp-8h] printf(&#34;Index:&#34;); v2 = read_long(); if ( v2 &gt; 1 || heap[v2] ) { LODWORD(v0) = puts(&#34;Invalid !&#34;); } else { printf(&#34;Size:&#34;); size = read_long(); if ( size &lt;= 0x78 ) { v4 = realloc(0LL, size); if ( v4 ) { heap[v2] = v4; printf(&#34;Data:&#34;); v0 = (_BYTE *)(heap[v2] &#43; read_input(heap[v2], size)); *v0 = 0; } else { LODWORD(v0) = puts(&#34;alloc error&#34;); } } else { LODWORD(v0) = puts(&#34;Too large!&#34;); } } return (int)v0; } Reallocate int reallocate() { unsigned __int64 v1; // [rsp&#43;8h] [rbp-18h] unsigned __int64 size; // [rsp&#43;10h] [rbp-10h] void *v3; // [rsp&#43;18h] [rbp-8h] printf(&#34;Index:&#34;); v1 = read_long(); if ( v1 &gt; 1 || !heap[v1] ) return puts(&#34;Invalid !&#34;); printf(&#34;Size:&#34;); size = read_long(); if ( size &gt; 0x78 ) return puts(&#34;Too large!&#34;); v3 = realloc((void *)heap[v1], size); if ( !v3 ) return puts(&#34;alloc error&#34;); heap[v1] = v3; printf(&#34;Data:&#34;); return read_input(heap[v1], size); } Rfree int rfree() { _QWORD *v0; // rax unsigned __int64 v2; // [rsp&#43;8h] [rbp-8h] printf(&#34;Index:&#34;); v2 = read_long(); if ( v2 &gt; 1 ) { LODWORD(v0) = puts(&#34;Invalid !&#34;); } else { realloc((void *)heap[v2], 0LL); v0 = heap; heap[v2] = 0LL; } return (int)v0; } Read_long __int64 read_long() { char nptr[24]; // [rsp&#43;10h] [rbp-20h] BYREF unsigned __int64 v2; // [rsp&#43;28h] [rbp-8h] v2 = __readfsqword(0x28u); __read_chk(0LL, nptr, 16LL, 17LL); return atoll(nptr); } 0x3. Analysis In this challenge, you have three options. Option 1 - Allocate. This option allows you to create a chunk, then stores this chunk to an array at 0x4040b0, but this array just has 2 elements.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-08-29 12:49:08 +0700 +07'>August 29, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to Realloc (200 pts) - pwnable.tw" href="//localhost:1313/blogs/realloc/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Applestore (200 pts) - pwnable.tw
     </h2>
   </header>
@@ -158,23 +171,12 @@
   <footer class="entry-footer"><span title='2025-08-29 12:42:01 +0700 +07'>August 29, 2025</span></footer>
   <a class="entry-link" aria-label="post link to Hacknote (200 pts) - pwnable.tw" href="//localhost:1313/blogs/hacknote/"></a>
 </article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Tcache tear (200 pts) - pwnable.tw
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p> 0x1. Initial Reconnaissance file ↪ file tcache_tear tcache_tear: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=a273b72984b37439fd6e9a64e86d1c2131948f32, stripped checksec ↪ checksec --file=tcache_tear RELRO STACK CANARY NX PIE RPATH RUNPATH	Symbols	FORTIFY	Fortified	Fortifiable	FILE Full RELRO Canary found NX enabled No PIE No RPATH No RUNPATH No Symbols	Partial	1	2	tcache_tear ./tcache_tear Name:YourName $$$$$$$$$$$$$$$$$$$$$$$ Tcache tear $$$$$$$$$$$$$$$$$$$$$$$ 1. Malloc 2. Free 3. Info 4. Exit $$$$$$$$$$$$$$$$$$$$$$$ Your choice : 0x2. Reverse Engineering main void __fastcall __noreturn main(int a1, char **a2, char **a3) { __int64 v3; // rax unsigned int v4; // [rsp&#43;Ch] [rbp-4h] sub_400948(); printf(&#34;Name:&#34;); sub_400A25((__int64)&amp;unk_602060, 0x20u); v4 = 0; while ( 1 ) { while ( 1 ) { sub_400A9C(); v3 = sub_4009C4(); if ( v3 != 2 ) break; if ( v4 &lt;= 7 ) { free(ptr); &#43;&#43;v4; } } if ( v3 &gt; 2 ) { if ( v3 == 3 ) { sub_400B99(); } else { if ( v3 == 4 ) exit(0); LABEL_14: puts(&#34;Invalid choice&#34;); } } else { if ( v3 != 1 ) goto LABEL_14; sub_400B14(); } } } Allocate int sub_400B14() { unsigned __int64 v0; // rax int size; // [rsp&#43;8h] [rbp-8h] printf(&#34;Size:&#34;); v0 = sub_4009C4(); size = v0; if ( v0 &lt;= 0xFF ) { ptr = malloc(v0); printf(&#34;Data:&#34;); sub_400A25((__int64)ptr, size - 16); LODWORD(v0) = puts(&#34;Done !&#34;); } return v0; } read_function _BYTE *__fastcall sub_400A25(__int64 a1, unsigned int a2) { _BYTE *result; // rax int chk; // [rsp&#43;1Ch] [rbp-4h] chk = __read_chk(0LL, a1, a2, a2); if ( chk &lt;= 0 ) { puts(&#34;read error&#34;); _exit(1); } result = (_BYTE *)*(unsigned __int8 *)(chk - 1LL &#43; a1); if ( (_BYTE)result == 10 ) { result = (_BYTE *)(chk - 1LL &#43; a1); *result = 0; } return result; } Info ssize_t sub_400B99() { printf(&#34;Name :&#34;); return write(1, &amp;unk_602060, 0x20uLL); } 0x3. Analysis First, you can write your name (up to 32 bytes) to name variable in bss (at 0x602060). You can also print out what’s in this variable with info option. They allow us to malloc a chunk of our desired size (as long as smaller than 0xff) and input our size-16 to these chunk, then store the address to ptr variable (at 0x602088). Free option enables us to free chunk stored at ptr variable but not reset it.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-08-29 09:53:43 +0700 +07'>August 29, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Tcache tear (200 pts) - pwnable.tw" href="//localhost:1313/blogs/tcache_tear/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="//localhost:1313/">
       «&nbsp;Prev&nbsp;
+    </a>
+    <a class="next" href="//localhost:1313/page/3/">Next&nbsp;&nbsp;»
     </a>
   </nav>
 </footer>

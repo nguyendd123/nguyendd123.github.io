@@ -2,19 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>//localhost:1313/blogs/babystack/</loc>
-    <lastmod>2025-09-01T10:00:35+07:00</lastmod>
-  </url><url>
     <loc>//localhost:1313/blogs/</loc>
-    <lastmod>2025-09-01T10:00:35+07:00</lastmod>
+    <lastmod>2025-09-04T20:48:18+07:00</lastmod>
   </url><url>
     <loc>//localhost:1313/</loc>
-    <lastmod>2025-09-01T10:00:35+07:00</lastmod>
+    <lastmod>2025-09-04T20:48:18+07:00</lastmod>
   </url><url>
     <loc>//localhost:1313/tags/pwnable.tw/</loc>
-    <lastmod>2025-09-01T10:00:35+07:00</lastmod>
+    <lastmod>2025-09-04T20:48:18+07:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/blogs/secretgarden/</loc>
+    <lastmod>2025-09-04T20:48:18+07:00</lastmod>
   </url><url>
     <loc>//localhost:1313/tags/</loc>
+    <lastmod>2025-09-04T20:48:18+07:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/blogs/babystack/</loc>
     <lastmod>2025-09-01T10:00:35+07:00</lastmod>
   </url><url>
     <loc>//localhost:1313/blogs/spirited_away/</loc>

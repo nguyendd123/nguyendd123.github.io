@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Tags | NguyenDD&#39;s Blog</title>
+<title>Pwnable.tw | NguyenDD&#39;s Blog</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="//localhost:1313/tags/">
+<link rel="canonical" href="//localhost:1313/tags/pwnable.tw/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
 <link rel="icon" href="//localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="//localhost:1313/tags/index.xml">
-<link rel="alternate" hreflang="en" href="//localhost:1313/tags/">
+<link rel="alternate" type="application/rss+xml" href="//localhost:1313/tags/pwnable.tw/index.xml">
+<link rel="alternate" hreflang="en" href="//localhost:1313/tags/pwnable.tw/">
 <noscript>
     <style>
         #theme-toggle,
@@ -106,7 +106,7 @@
             </li>
             <li>
                 <a href="//localhost:1313/tags" title="Tags">
-                    <span class="active">Tags</span>
+                    <span>Tags</span>
                 </a>
             </li>
             <li>
@@ -117,16 +117,32 @@
         </ul>
     </nav>
 </header>
-<main class="main">
+<main class="main"> 
 <header class="page-header">
-    <h1>Tags</h1>
+  <h1>
+    Pwnable.tw
+  </h1>
 </header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="//localhost:1313/tags/pwnable.tw/">pwnable.tw <sup><strong><sup>9</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Tcache tear (200 pts) - pwnable.tw
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 0x1. Initial Reconnaissance file ↪ file tcache_tear tcache_tear: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=a273b72984b37439fd6e9a64e86d1c2131948f32, stripped checksec ↪ checksec --file=tcache_tear RELRO STACK CANARY NX PIE RPATH RUNPATH	Symbols	FORTIFY	Fortified	Fortifiable	FILE Full RELRO Canary found NX enabled No PIE No RPATH No RUNPATH No Symbols	Partial	1	2	tcache_tear ./tcache_tear Name:YourName $$$$$$$$$$$$$$$$$$$$$$$ Tcache tear $$$$$$$$$$$$$$$$$$$$$$$ 1. Malloc 2. Free 3. Info 4. Exit $$$$$$$$$$$$$$$$$$$$$$$ Your choice : 0x2. Reverse Engineering main void __fastcall __noreturn main(int a1, char **a2, char **a3) { __int64 v3; // rax unsigned int v4; // [rsp&#43;Ch] [rbp-4h] sub_400948(); printf(&#34;Name:&#34;); sub_400A25((__int64)&amp;unk_602060, 0x20u); v4 = 0; while ( 1 ) { while ( 1 ) { sub_400A9C(); v3 = sub_4009C4(); if ( v3 != 2 ) break; if ( v4 &lt;= 7 ) { free(ptr); &#43;&#43;v4; } } if ( v3 &gt; 2 ) { if ( v3 == 3 ) { sub_400B99(); } else { if ( v3 == 4 ) exit(0); LABEL_14: puts(&#34;Invalid choice&#34;); } } else { if ( v3 != 1 ) goto LABEL_14; sub_400B14(); } } } Allocate int sub_400B14() { unsigned __int64 v0; // rax int size; // [rsp&#43;8h] [rbp-8h] printf(&#34;Size:&#34;); v0 = sub_4009C4(); size = v0; if ( v0 &lt;= 0xFF ) { ptr = malloc(v0); printf(&#34;Data:&#34;); sub_400A25((__int64)ptr, size - 16); LODWORD(v0) = puts(&#34;Done !&#34;); } return v0; } read_function _BYTE *__fastcall sub_400A25(__int64 a1, unsigned int a2) { _BYTE *result; // rax int chk; // [rsp&#43;1Ch] [rbp-4h] chk = __read_chk(0LL, a1, a2, a2); if ( chk &lt;= 0 ) { puts(&#34;read error&#34;); _exit(1); } result = (_BYTE *)*(unsigned __int8 *)(chk - 1LL &#43; a1); if ( (_BYTE)result == 10 ) { result = (_BYTE *)(chk - 1LL &#43; a1); *result = 0; } return result; } Info ssize_t sub_400B99() { printf(&#34;Name :&#34;); return write(1, &amp;unk_602060, 0x20uLL); } 0x3. Analysis First, you can write your name (up to 32 bytes) to name variable in bss (at 0x602060). You can also print out what’s in this variable with info option. They allow us to malloc a chunk of our desired size (as long as smaller than 0xff) and input our size-16 to these chunk, then store the address to ptr variable (at 0x602088). Free option enables us to free chunk stored at ptr variable but not reset it.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-08-29 09:53:43 +0700 +07'>August 29, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to Tcache tear (200 pts) - pwnable.tw" href="//localhost:1313/blogs/tcache_tear/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="//localhost:1313/tags/pwnable.tw/page/2/">
+      «&nbsp;Prev&nbsp;
+    </a>
+  </nav>
+</footer>
     </main>
     
 <footer class="footer">
