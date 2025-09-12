@@ -131,13 +131,13 @@ home_banner:
   style: fixed # static or fixed
   # Home banner image
   image: 
-    light: /images/light.png # light mode
-    dark: /images/light.png # dark mode
+    light: /images/malta_light.png # light mode
+    dark: /images/malta_dark.png # dark mode
   # Home banner title
   title: Hi, I'm NguyenDD.
   # Home banner subtitle
   subtitle:
-    text: ["I'm just a normal lad trying to bounce back after 3 tough years at HUS's high school for gifted students", "...and I love football. Futbol is life !", "AKA dd", "AKA Ddebruyne"] # subtitle text, array
+    text: # subtitle text, array
     hitokoto:  # 一言配置
       enable: false # Whether to enable hitokoto
       show_author: true # Whether to show author
@@ -155,7 +155,7 @@ home_banner:
   # Specific style of the text
   text_style: 
     # Title font size
-    title_size: 2.8rem
+    title_size: 0rem
     # Subtitle font size
     subtitle_size: 1.5rem
     # Line height between title and subtitle
@@ -199,7 +199,7 @@ navbar:
   color:
     left: "#f78736" #left side 
     right: "#367df7"  #right side
-    transparency: 35 #percent (10-99)
+    transparency: 5 #percent (10-99)
   # Navbar width (usually no need to modify)
   width:
     home: 1200px #home page
@@ -252,15 +252,15 @@ home:
     announcement: Welcome to my blog site. # Announcement text
     show_on_mobile: true # Whether to show sidebar navigation on mobile sheet menu
     links:
-      # Archives: 
-      #   path: /archives 
-      #   icon: fa-regular fa-archive # can be empty
-      # Tags: 
-      #   path: /tags 
-      #   icon: fa-regular fa-tags # can be empty
-      # Categories: 
-      #   path: /categories 
-      #   icon: fa-regular fa-folder # can be empty
+      Archives: 
+        path: /archives 
+        icon: fa-regular fa-archive # can be empty
+      Tags: 
+        path: /tags 
+        icon: fa-regular fa-tags # can be empty
+      Categories: 
+        path: /categories 
+        icon: fa-regular fa-folder # can be empty
       # ...... # you can add more
   # Article date format
   article_date_format: auto # auto, relative, YYYY-MM-DD, YYYY-MM-DD HH:mm:ss etc.
