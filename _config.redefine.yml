@@ -99,6 +99,7 @@ global:
   # Whether to enable open graph
   open_graph:
     enable: true
+    title: NguyenDD's blog
     image: /images/debruyne.jpg  # default og:image
     description: I'm NguyenDD, just a normal lad so don't put your blame on me.
   # Google Analytics
