@@ -5,6 +5,8 @@ date: 2025-09-13 14:19:16
 
 ## General
 
+Hi, I'm NguyenDD.
+
 - I'm just a normal lad trying to bounce back after 3 tough years at HUS's high school for gifted students.
 - A football lover, Futbol is life !
 
