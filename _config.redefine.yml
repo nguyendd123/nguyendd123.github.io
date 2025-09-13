@@ -99,8 +99,8 @@ global:
   # Whether to enable open graph
   open_graph:
     enable: true
-    image: /images/redefine-og.webp  # default og:image
-    description: Hexo Theme Redefine, Redefine Your Hexo Journey.
+    image: /images/debruyne.jpg  # default og:image
+    description: I'm NguyenDD, just a normal lad so don't put your blame on me.
   # Google Analytics
   google_analytics:
     enable: false # Whether to enable Google Analytics
@@ -490,29 +490,3 @@ developer:
   # Whether to enable developer mode (only for developers who want to modify the theme source code, not for ordinary users)
   enable: false
 # DEVELOPER MODE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
-
-
-seo:
-  enable: true
-  # Custom meta tags
-  meta:
-    - name: NguyenDD
-      content: I'm just a normal lad at all.
-    - property: og:title
-      content: nguyendd's blog site
-    - property: og:description
-      content: I'm just a normal lad, so don't put your blame on me.
-    - property: og:image
-      content: /images/debruyne.jpg
-    - property: og:url
-      content: https://your-domain.com
-    - property: og:type
-      content: website
-    - name: twitter:card
-      content: summary_large_image
-    - name: twitter:title
-      content: Your Site Title
-    - name: twitter:description
-      content: Your custom description
-    - name: twitter:image
-      content: https://your-domain.com/images/og-image.jpg
