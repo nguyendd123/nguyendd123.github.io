@@ -98,7 +98,7 @@ global:
     auto_expand: false
   # Whether to enable open graph
   open_graph:
-    enable: true
+    enable: false
     title: NguyenDD's blog
     image: /images/debruyne.jpg  # default og:image
     description: I'm NguyenDD, just a normal lad so don't put your blame on me.
