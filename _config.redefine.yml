@@ -210,22 +210,21 @@ navbar:
     Home: 
       path: / 
       icon: fa-regular fa-house # can be empty
+    LS: 
+      path: /archives 
+      icon: fa-regular fa-archive # can be empty
     Tags:
       icon: fa-solid fa-tags
       path: /tags
-    Archives: 
-      path: /archives 
-      icon: fa-regular fa-archive # can be empty
     # Status: 
     #   path: https://status.ohevan.com/
     #   icon: fa-regular fa-chart-bar
-    # About: 
-    #   icon: fa-regular fa-user
-    #   submenus:
-    #     Me: /about
-    #     Github: https://github.com/EvanNotFound/hexo-theme-redefine
-    #     Blog: https://ohevan.com
-    #     Friends: /friends
+    About: 
+      icon: fa-regular fa-user
+      submenus:
+        Me: /about
+        Github: https://github.com/nguyendd123
+        Blog: https://nguyendd123.github.io
     # Links: 
     #   icon: fa-regular fa-link
     #   submenus:
