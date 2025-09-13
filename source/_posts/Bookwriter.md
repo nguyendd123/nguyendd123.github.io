@@ -191,7 +191,7 @@ In this challenge, you have 4 options as you can see above.
 --- 
 ## 0x4. Exploit
 
-You can use House of Orange attack to solve this challenge, that you can read it [here](https://guyinatuxedo.github.io/43-house_of_orange/house_orange_exp/index.html) and [here](https://nguyendd123.github.io/blogs/houseoforange/).
+You can use House of Orange attack to solve this challenge, that you can read it [here](https://guyinatuxedo.github.io/43-house_of_orange/house_orange_exp/index.html) and [here](https://nguyendd123.github.io/2025/09/09/houseoforange/).
 
 After put the top chunk into unsortedbin, you can allocate a small chunk to get the address of ```main_arena```, forge a fake ```IO_FILE_plus``` as they did and you will get the shell.
 
