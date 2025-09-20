@@ -133,7 +133,7 @@ Because the first chunk, I allocate in this challenge, is always placed at the b
 
 You can setup your chunks like that: 
 
-![image](/images/chunk.jpg)
+![image](images/chunk.jpg)
 <!-- ![image](/source/images/chunk.jpg) -->
 
 After getting your fake chunk, you can edit the size of your chunk by freeing chunk1, and malloc (0x68) again. Free your fake chunk to place it into unsortedbin. Now the fake chunk's fd points to main_arena. Change the offset of fd pointer to have a fastbin like that:
