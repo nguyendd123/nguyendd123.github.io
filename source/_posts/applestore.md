@@ -4,7 +4,6 @@ draft: false
 title: 'Applestore (200 pts) - pwnable.tw'
 tags: ["pwnable.tw"]
 ---
----
 
 ## 0x1. Initial Reconnaissance 
 
@@ -33,8 +32,6 @@ Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RU
 6: Exit
 > 
 ```
-
----
 
 ## 0x2. Reverse Engineering
 
@@ -250,13 +247,11 @@ unsigned int checkout()
 }
 ```
 
----
 
 ## 0x3. Analysis
 
 When you add an item, they will create a chunk of 16 bytes on heap, assume address of this chunk is v, v + 0 would store name of the item, v + 4 stores price of the item, and v + 8 stores the next item, v + 12 stores the previous item (this is for the linked list). Then, this chunk will be inserted into a doubly linked-list, and the head will be stored at 0x804B070. Delete function allows you to remove an item and delete the chunk from the linked-list. Cart function lists all items and calculates the total price. Finally, checkout function prints the total price and if the total price is 7174, they will gift you an Iphone 8 for 1 dollar. And now, notice that in cart, delete and handler, they allow us to input 21 bytes for the numbers, representing the option, resulting to vulnerability.
 
----
 
 ## 0x4. Exploit 
 

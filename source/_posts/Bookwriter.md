@@ -4,7 +4,6 @@ draft: false
 title: 'Bookwriter (350 pts) - pwnable.tw'
 tags: ['pwnable.tw', 'House_of_Orange']
 ---
----
 
 ## 0x1. Initial Reconnaissance
 
@@ -38,7 +37,6 @@ Author :ndd
 Your choice :
 ```
 
----
 
 ## 0x2. Reverse Engineering
 
@@ -178,7 +176,6 @@ unsigned __int64 sub_400C04()
 }
 ```
 
----
 
 ## 0x3. Analysis
 
@@ -188,7 +185,7 @@ In this challenge, you have 4 options as you can see above.
     - You can write 64 bytes to author field, which is right above the array stores address of chunks. That means you can get the address of the first chunk.
     - As you can see in the function to add a page, they store the address of chunks to 0x6020A0 and the size we allocate to 0x6020E0. The most noticeable point is that ```0x6020E0 - 0x6020A0 = 0x40```, and they allow you to add 9 pages. As a result, in page 9, they will store the address of page 9 to 0x6020E0, which is the size of the first page, thus you can edit the first page to overflow the heap.
 
---- 
+
 ## 0x4. Exploit
 
 You can use House of Orange attack to solve this challenge, that you can read it [here](https://guyinatuxedo.github.io/43-house_of_orange/house_orange_exp/index.html) and [here](https://nguyendd123.github.io/2025/09/09/houseoforange/).

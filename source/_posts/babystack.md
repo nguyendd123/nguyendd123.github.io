@@ -4,7 +4,6 @@ draft: false
 title: 'Babystack (250 pts) - pwnable.tw'
 tags: ['pwnable.tw']
 ---
----
 
 ## 0x1. Initial Reconnaissance
 
@@ -28,7 +27,6 @@ Full RELRO      Canary found      NX enabled    PIE enabled     No RPATH   No RU
 Your passowrd :
 ```
 
----
 
 ## 0x2. Reverse Engineering
 
@@ -114,7 +112,6 @@ int __fastcall sub_DEF(const char *a1)
 }
 ```
 
----
 
 ## 0x3. Analysis
 
@@ -122,7 +119,6 @@ In this problem, we have 3 options, choose 1 to input the password up to 128 byt
 
 Another noticeable point is that they check the password you input using ```strncmp``` with the length of your input. That means if you input a null value (```\x00```), you can bypass :DD, because ```strlen``` counts til the first null byte.
 
----
 
 ## 0x4. Exploit
 

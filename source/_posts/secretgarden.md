@@ -4,7 +4,7 @@ draft: false
 title: 'Secret garden (350 pts) - pwnable.tw'
 tags: ['pwnable.tw']
 ---
----
+
 ## 0x1. Initial Reconnaissance
 
 ### file
@@ -37,7 +37,6 @@ Full RELRO      Canary found      NX enabled    PIE enabled     No RPATH   No RU
 Your choice :
 ```
 
----
 ## 0x2. Reverse Engineering
 
 ### main
@@ -224,7 +223,6 @@ unsigned __int64 sub_EA1()
 }
 ```
 
----
 
 ## 0x3. Analysis
 
@@ -241,7 +239,6 @@ After growing a flower, they will store the address of this flower field into an
 - Seeing the garden lists all flowers in the array that ```in_used``` marked.
 - Clean the garden frees all flower fields in the array with ```in_used``` unmarked and also assign the variables, that store these flowers, to 0.
 
----
 
 ## 0x4. Exploit
 

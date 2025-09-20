@@ -4,7 +4,6 @@ draft: false
 title: 'Seethefile (250 pts) - pwnable.tw'
 tags: ["pwnable.tw"]
 ---
----
 
 ## 0x1. Initial Reconnaissance 
 
@@ -38,7 +37,6 @@ Partial RELRO   No canary found   NX enabled    No PIE          No RPATH   No RU
 Your choice :
 ```
 
----
 
 ## 0x2. Reverse Engineering
 
@@ -172,7 +170,6 @@ int closefile()
 }
 ```
 
----
 ## 0x3. Analysis
 
 We have 5 options, write a file name to filename variable in bss, open it and store the address of ```_IO_FILE_PLUS``` to fp variable in bss. 
@@ -266,7 +263,7 @@ struct _IO_FILE_plus
 We can also read the file and store the content to magicbuf, print the content to the screen. You can use fread the second time to read the next 400 bytes. You can also close the file if you want.
 The last option is exit, after that you can write whatever you want with your desire length to an array char name[32] just right above fp variable.
 
----
+
 ## 0x4. Exploit
 
 You can open the file ```/proc/self/maps``` to leak the libc address. When exit the process, they call fclose too, before that you can overwrite fp variable, and create a fake ```_IO_FILE_PLUS``` too.

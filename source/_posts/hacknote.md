@@ -4,7 +4,6 @@ draft: false
 title: 'Hacknote (200 pts) - pwnable.tw'
 tags: ["pwnable.tw"]
 ---
----
 ## 0x1. Initial Reconnaissance 
 
 ### file
@@ -38,7 +37,6 @@ Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RU
 Your choice :
 ```
 
----
 
 ## 0x2. Reverse Engineering
 
@@ -151,7 +149,6 @@ unsigned int sub_80488A5()
   return __readgsdword(0x14u) ^ v6;
 }
 ```
----
 
 ## 0x3. Analysis
 
@@ -167,7 +164,6 @@ int __cdecl sub_804862B(int a1)
 Let's see the Print_note, they will call the function stored at the the first chunk (it's the function above), and pass its address to this function too. Finally, they will print everything at the address stored at the second element. 
 Next, the Delete_note function, they just free the second chunk, then the first one, but <b>they don't assign the element of the array back to null or 0</b>, that's why I tell you that, you just get to use add_note functions 5 times.
 
----
 
 ## 0x4. Exploit
 

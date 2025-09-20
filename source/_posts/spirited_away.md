@@ -5,7 +5,6 @@ title: 'Spirited away (300 pts) - pwnable.tw'
 tags: ["pwnable.tw"]
 ---
 
----
 
 ## 0x1. Initial Reconnaissance
 
@@ -47,7 +46,6 @@ Comment: bullshit
 Would you like to leave another comment? <y/n>:
 ```
 
----
 
 ## 0x2. Reverse Engineering
 
@@ -117,7 +115,6 @@ LABEL_2:
 }
 ```
 
---- 
 
 ## 0x3. Analysis
 
@@ -143,7 +140,6 @@ ebp - 0x50 -> v7[0] (reason)
 ebp        -> ... 
 ```
 
----
 
 ## 0x3. Exploit
 

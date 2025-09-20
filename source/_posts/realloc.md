@@ -4,7 +4,6 @@ draft: false
 title: 'Realloc (200 pts) - pwnable.tw'
 tags: ["pwnable.tw"]
 ---
----
 
 ## 0x1. Initial Reconnaissance 
 
@@ -35,7 +34,6 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$
 Your choice:
 ```
 
----
 
 ## 0x2. Reverse Engineering
 
@@ -188,7 +186,6 @@ __int64 read_long()
 }
 ```
 
----
 
 ## 0x3. Analysis
 
@@ -202,7 +199,6 @@ You can expand or shrink the chunk as you want :b.
 Option 3 - Rfree.
 They realloc the chosen chunk to the size of 0, then assign the chosen index to 0 too.
 
----
 
 ## 0x4. Exploit
 

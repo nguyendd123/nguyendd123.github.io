@@ -7,7 +7,7 @@ title: 'Tcache tear (200 pts) - pwnable.tw'
 #     alt: 'wait a minute'
 tags: ["pwnable.tw"]
 ---
----
+
 ## 0x1. Initial Reconnaissance
 
 ### file
@@ -37,7 +37,6 @@ $$$$$$$$$$$$$$$$$$$$$$$
 Your choice :
 ```
 
----
 
 ## 0x2. Reverse Engineering
 
@@ -143,12 +142,10 @@ ssize_t sub_400B99()
 }
 ```
 
----
 ## 0x3. Analysis
 
 First, you can write your name (up to 32 bytes) to name variable in bss (at 0x602060). You can also print out what's in this variable with info option. They allow us to malloc a chunk of our desired size (as long as smaller than 0xff) and input our size-16 to these chunk, then store the address to ptr variable (at 0x602088). Free option enables us to free chunk stored at ptr variable but not reset it.
 
----
 
 ## 0x4. Exploit
 
