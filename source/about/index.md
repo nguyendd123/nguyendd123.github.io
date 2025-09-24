@@ -15,7 +15,7 @@ Hi, I'm NguyenDD.
 - Son Dong primary school.
 - Son Dong secondary school.
 - HUS's high school for gifted students.
-- University of Engineering and Technology.
+- University of Engineering and Technology, Vietnam National University Hanoi.
 
 ## Goals
 
